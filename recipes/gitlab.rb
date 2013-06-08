@@ -86,11 +86,8 @@ template "/etc/init.d/gitlab" do
   mode   0755
   source 'gitlab.init.erb'
   variables(
-    :fqdn      => node[:fqdn],
     :app_home  => node[:gitlab][:app_home],
-    :pid_path  => node[:gitlab][:pid_path],
     :git_user  => node[:gitlab][:user],
-    :ruby_dir  => node[:gitlab][:marker_dir]
   )
 end
 
