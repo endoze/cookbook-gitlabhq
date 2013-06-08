@@ -1,0 +1,107 @@
+
+# Clone gitlab
+git node[:gitlab][:app_home] do
+  repository  node[:gitlab][:gitlab_url]
+  reference   node[:gitlab][:gitlab_branch]
+  action      :checkout
+  user        node[:gitlab][:user]
+  group       node[:gitlab][:group]
+end
+
+# Render gitlab config file
+template "#{node[:gitlab][:app_home]}/config/gitlab.yml" do
+  owner  node[:gitlab][:user]
+  group  node[:gitlab][:group]
+  mode   0644
+  variables(
+    :fqdn             => node[:fqdn],
+    :https_boolean    => node[:gitlab][:https],
+    :git_user         => node[:gitlab][:git_user],
+    :git_home         => node[:gitlab][:git_home],
+    :backup_path      => node[:gitlab][:backup_path],
+    :backup_keep_time => node[:gitlab][:backup_keep_time],
+    :app_home         => node[:gitlab][:home],
+    :ssh_port         => node[:gitlab][:ssh_port]
+  )
+end
+
+# Write the database.yml
+template "#{node[:gitlab][:app_home]}/config/database.yml" do
+  source 'database.yml.erb'
+  owner  node[:gitlab][:user]
+  group  node[:gitlab][:group]
+  mode   0644
+  variables(
+    :adapter  => node[:gitlab][:database][:adapter],
+    :encoding => node[:gitlab][:database][:encoding],
+    :host     => node[:gitlab][:database][:host],
+    :database => node[:gitlab][:database][:database],
+    :pool     => node[:gitlab][:database][:pool],
+    :username => node[:gitlab][:database][:username],
+    :password => node[:gitlab][:database][:password]
+  )
+end
+
+# Create directory for gitlab socket
+directory "#{node[:gitlab][:app_home]}/tmp/sockets" do
+  user    node[:gitlab][:user]
+  group   node[:gitlab][:group]
+  mode    0755
+  action  :create
+end
+
+# Create the gitlab Backup folder
+directory node[:gitlab][:backup_path] do
+  owner  node[:gitlab][:user]
+  group  node[:gitlab][:group]
+  mode   0755
+  action :create
+end
+
+# Install gems with bundle install
+without_group = node[:gitlab][:database][:type] == 'mysql' ? 'postgres' : 'mysql'
+
+execute "gitlab-bundle-install" do
+  command "bundle install --without development test #{without_group} --deployment"
+  cwd     node[:gitlab][:app_home]
+  user    node[:gitlab][:user]
+  group   node[:gitlab][:group]
+  environment({ 'LANG' => 'en_US.UTF-8', 'LC_ALL' => 'en_US.UTF-8' })
+  creates "#{node[:gitlab][:app_home]}/vendor/bundle"
+end
+
+# Setup database for Gitlab
+execute "gitlab-bundle-rake" do
+  command "echo 'yes' | bundle exec rake gitlab:setup RAILS_ENV=production && touch #{node[:gitlab][:marker_dir]}/.gitlab-setup"
+  cwd     node[:gitlab][:app_home]
+  user    node[:gitlab][:user]
+  group   node[:gitlab][:group]
+  creates "#{node[:gitlab][:marker_dir]}/.gitlab-setup"
+end
+
+# Render gitlab init script
+template "/etc/init.d/gitlab" do
+  owner  'root'
+  group  'root'
+  mode   0755
+  source 'gitlab.init.erb'
+  variables(
+    :fqdn      => node[:fqdn],
+    :app_home  => node[:gitlab][:app_home],
+    :pid_path  => node[:gitlab][:pid_path],
+    :git_user  => node[:gitlab][:user],
+    :ruby_dir  => node[:gitlab][:marker_dir]
+  )
+end
+
+# Render puma template
+template  "#{node[:gitlab][:app_home]}/config/puma.rb" do
+  owner   node[:gitlab][:user]
+  group   node[:gitlab][:group]
+  mode    0644
+  variables(
+    :fqdn               => node[:fqdn],
+    :gitlab_app_home    => node[:gitlab][:app_home],
+    :gitlab_environment => node[:gitlab][:environment]
+  )
+end
