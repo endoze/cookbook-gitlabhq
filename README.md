@@ -1,7 +1,6 @@
-gitlabhq Cookbook
+GitLabHQ Cookbook
 =================
-This cookbook installs and configures GitLab. It also installs and
-configures GitLab CI.
+This cookbook installs and configures GitLab.
 
 
 Requirements
