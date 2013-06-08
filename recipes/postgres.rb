@@ -20,7 +20,7 @@ include_recipe 'postgresql::ruby'
 
 # Enable secure password generation
 ::Chef::Recipe.send(:include, Opscode::OpenSSL::Password)
-node.set_unless['gitlab']['database']['password'] = secure_password
+node.set_unless[:gitlab][:database][:password] = secure_password
 ruby_block "save node data" do
   block do
     node.save
@@ -29,15 +29,15 @@ ruby_block "save node data" do
 end
 
 # Helper variables
-database = node['gitlab']['database']['database']
-database_user = node['gitlab']['database']['username']
-database_password = node['gitlab']['database']['password']
-database_host = node['gitlab']['database']['host']
+database = node[:gitlab][:database][:database]
+database_user = node[:gitlab][:database][:username]
+database_password = node[:gitlab][:database][:password]
+database_host = node[:gitlab][:database][:host]
 database_connection = {
   :host     => database_host,
   :port     => '5432',
   :username => 'postgres',
-  :password => node['postgresql']['password']['postgres']
+  :password => node[:postgresql][:password][:postgres]
 }
 
 # Create the database
