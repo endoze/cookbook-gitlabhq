@@ -63,9 +63,7 @@ default[:gitlab][:ssl_req] = "/C=US/ST=Several/L=Locality/O=Example/OU=Operation
 Usage
 -----
 #### gitlabhq::default
-TODO: Write usage instructions for each cookbook.
 
-e.g.
 Just include `gitlabhq` in your node's `run_list`:
 
 ```json
