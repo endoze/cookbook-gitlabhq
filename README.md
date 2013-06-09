@@ -2,7 +2,7 @@ GitLabHQ Cookbook
 =================
 This cookbook installs and configures GitLab.
 
-[![Build Status](https://secure.travis-ci.org/WideEyeLabs/cookbook-gitlabhq.png)](http://travis-ci.org/WideEyeLabs/cookbook-gitlabhq?branch=master)
+[![Build Status](https://secure.travis-ci.org/WideEyeLabs/cookbook-gitlabhq.png?branch=master)](http://travis-ci.org/WideEyeLabs/cookbook-gitlabhq?branch=master)
 
 Requirements
 ------------
