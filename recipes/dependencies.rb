@@ -24,12 +24,12 @@ end
 end
 
 # Install pygments from pip
-python_pip "pygments" do
+python_pip 'pygments' do
   action :install
 end
 
 # Set up redis for Gitlab hooks
-link "/usr/bin/redis-cli" do
+link '/usr/bin/redis-cli' do
   to '/usr/local/bin/redis-cli'
 end
 
