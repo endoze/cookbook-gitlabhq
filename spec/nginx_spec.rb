@@ -1,7 +1,7 @@
-require 'chefspec'
+require_relative 'spec_helper'
 
 describe 'gitlabhq::nginx' do
-  let (:chef_run) { ChefSpec::ChefRunner.new.converge 'gitlabhq::nginx' }
+  let (:chef_run) { ChefSpec::ChefRunner.new.converge 'gitlabhq::default' }
 
   describe 'when https is true' do
     it 'should create an ssl key' do

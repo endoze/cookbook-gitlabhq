@@ -1,4 +1,4 @@
-require 'chefspec'
+require_relative 'spec_helper'
 
 describe 'gitlabhq::gitlab_shell' do
   let (:chef_run) { ChefSpec::ChefRunner.new.converge 'gitlabhq::gitlab_shell' }
