@@ -22,7 +22,7 @@ directory "#{node[:gitlab][:home]}/.ssh" do
 end
 
 # Add ruby to path
-execute "add-ruby-to-bashrc" do
+execute 'add-ruby-to-bashrc' do
   command "echo \"export PATH=#{node[:gitlab][:ruby_dir]}:$PATH\" >> #{node[:gitlab][:home]}/.bashrc && touch .markers/.bashrc-set"
   cwd     node[:gitlab][:home]
   user    node[:gitlab][:user]
@@ -30,7 +30,7 @@ execute "add-ruby-to-bashrc" do
   creates "#{node[:gitlab][:marker_dir]}/.bashrc-set"
 end
 
-execute "add-ruby-to-bash_profile" do
+execute 'add-ruby-to-bash_profile' do
   command "echo \"export PATH=#{node[:gitlab][:ruby_dir]}:$PATH\" >> #{node[:gitlab][:home]}/.bash_profile && touch .markers/.bash_profile-set"
   cwd     node[:gitlab][:home]
   user    node[:gitlab][:user]

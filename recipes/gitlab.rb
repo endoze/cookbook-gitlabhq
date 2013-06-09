@@ -61,7 +61,7 @@ end
 # Install gems with bundle install
 without_group = node[:gitlab][:database][:type] == 'mysql' ? 'postgres' : 'mysql'
 
-execute "gitlab-bundle-install" do
+execute 'gitlab-bundle-install' do
   command "bundle install --without development test #{without_group} --deployment"
   cwd     node[:gitlab][:app_home]
   user    node[:gitlab][:user]
@@ -71,7 +71,7 @@ execute "gitlab-bundle-install" do
 end
 
 # Setup database for Gitlab
-execute "gitlab-bundle-rake" do
+execute 'gitlab-bundle-rake' do
   command "echo 'yes' | bundle exec rake gitlab:setup RAILS_ENV=production && touch #{node[:gitlab][:marker_dir]}/.gitlab-setup"
   cwd     node[:gitlab][:app_home]
   user    node[:gitlab][:user]
@@ -80,7 +80,7 @@ execute "gitlab-bundle-rake" do
 end
 
 # Render gitlab init script
-template "/etc/init.d/gitlab" do
+template '/etc/init.d/gitlab' do
   owner  'root'
   group  'root'
   mode   0755
