@@ -3,6 +3,8 @@
 case node[:platform]
 when 'ubuntu','debian'
   default[:gitlab][:packages] = %w{
+    zlib1g-dev libgdbm-dev libreadline-dev
+    libncurses5-dev libffi-dev libxml2-dev
     ruby1.9.1 ruby1.9.1-dev ri1.9.1 libruby1.9.1
     curl wget checkinstall libxslt-dev libsqlite3-dev
     libcurl4-openssl-dev libssl-dev libmysql++-dev
@@ -71,7 +73,7 @@ default[:gitlab][:database][:username] = 'gitlab'
 
 # GITLAB
 default[:gitlab][:gitlab_url] = 'git://github.com/gitlabhq/gitlabhq.git'
-default[:gitlab][:gitlab_branch] = 'v5.2.0'
+default[:gitlab][:gitlab_branch] = 'v5.3.0'
 default[:gitlab][:backup_keep_time] = 604800
 default[:gitlab][:https] = true
 default[:gitlab][:ssl_certificate] = "/etc/nginx/#{node[:fqdn]}.crt"
