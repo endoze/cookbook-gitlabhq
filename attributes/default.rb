@@ -61,7 +61,7 @@ default[:gitlab][:redis_port] = 6379
 default[:gitlab][:redis_socket] = '/tmp/redis.socket'
 default[:gitlab][:redis_namespace] = 'resque:gitlab'
 default[:gitlab][:trust_local_sshkeys] = 'yes'
-default[:openssh][:settings][:permit_user_environment] = 'yes'
+default[:openssh][:server][:permit_user_environment] = 'yes'
 
 # DATABASE
 default[:gitlab][:database][:type] = 'mysql'
