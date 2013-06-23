@@ -21,6 +21,15 @@ directory "#{node[:gitlab][:home]}/.ssh" do
   mode   0700
 end
 
+# Add ruby to ssh env
+execute "add-ruby-to-ssh-env" do
+  command "echo \"export PATH=#{node[:gitlab][:ruby_dir]}:$PATH\" >> #{node[:gitlab][:home]}/.ssh/environment && touch .markers/.env-set"
+  cwd     node[:gitlab][:home]
+  user    node[:gitlab][:user]
+  group   node[:gitlab][:group]
+  creates "#{node[:gitlab][:marker_dir]}/.env-set"
+end
+
 # Add ruby to path
 execute "add-ruby-to-bashrc" do
   command "echo \"export PATH=#{node[:gitlab][:ruby_dir]}:$PATH\" >> #{node[:gitlab][:home]}/.bashrc && touch .markers/.bashrc-set"
