@@ -87,7 +87,7 @@ template "/etc/init.d/gitlab" do
   source 'gitlab.init.erb'
   variables(
     :app_home  => node[:gitlab][:app_home],
-    :git_user  => node[:gitlab][:user],
+    :git_user  => node[:gitlab][:user]
   )
 end
 

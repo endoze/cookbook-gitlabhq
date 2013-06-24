@@ -34,3 +34,18 @@ include_recipe "gitlabhq::nginx"
   end
 end
 
+execute "sidekiq-start" do
+  command "sudo -u git -H bash -l -c \"RAILS_ENV=production bundle exec rake sidekiq:start\""
+  cwd     node[:gitlab][:app_home]
+  user    node[:gitlab][:user]
+  group   node[:gitlab][:group]
+  creates "#{node[:gitlab][:app_home]}/tmp/pids/sidekiq.pid"
+end
+
+execute "gitlab-start" do
+  command "sudo -u git -H bash -l -c \"RAILS_ENV=production bundle exec puma -C #{node[:gitlab][:app_home]}/config/puma.rb\""
+  cwd     node[:gitlab][:app_home]
+  user    node[:gitlab][:user]
+  group   node[:gitlab][:group]
+  creates "#{node[:gitlab][:app_home]}/tmp/pids/puma.pid"
+end
