@@ -3,6 +3,8 @@
 case node[:platform]
 when 'ubuntu','debian'
   default[:gitlab][:packages] = %w{
+    zlib1g-dev libgdbm-dev libreadline-dev
+    libncurses5-dev libffi-dev libxml2-dev
     ruby1.9.1 ruby1.9.1-dev ri1.9.1 libruby1.9.1
     curl wget checkinstall libxslt-dev libsqlite3-dev
     libcurl4-openssl-dev libssl-dev libmysql++-dev
@@ -47,7 +49,7 @@ default[:gitlab][:marker_dir] = "#{node[:gitlab][:home]}/.markers"
 # GITLAB SHELL
 default[:gitlab][:ssh_port] = 22
 default[:gitlab][:gitlab_shell_url] = 'git://github.com/gitlabhq/gitlab-shell.git'
-default[:gitlab][:gitlab_shell_branch] = 'v1.4.0'
+default[:gitlab][:gitlab_shell_branch] = 'v1.5.0'
 default[:gitlab][:gitlab_shell_home] = "#{node[:gitlab][:home]}/gitlab-shell"
 default[:gitlab][:gitlab_shell_user] = 'git'
 default[:gitlab][:repos_path] = "#{node[:gitlab][:home]}/repositories"
@@ -59,6 +61,7 @@ default[:gitlab][:redis_port] = 6379
 default[:gitlab][:redis_socket] = '/tmp/redis.socket'
 default[:gitlab][:redis_namespace] = 'resque:gitlab'
 default[:gitlab][:trust_local_sshkeys] = 'yes'
+default[:openssh][:server][:permit_user_environment] = 'yes'
 
 # DATABASE
 default[:gitlab][:database][:type] = 'mysql'
@@ -71,7 +74,7 @@ default[:gitlab][:database][:username] = 'gitlab'
 
 # GITLAB
 default[:gitlab][:gitlab_url] = 'git://github.com/gitlabhq/gitlabhq.git'
-default[:gitlab][:gitlab_branch] = 'v5.2.0'
+default[:gitlab][:gitlab_branch] = 'v5.3.0'
 default[:gitlab][:backup_keep_time] = 604800
 default[:gitlab][:https] = true
 default[:gitlab][:ssl_certificate] = "/etc/nginx/#{node[:fqdn]}.crt"
