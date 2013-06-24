@@ -40,6 +40,7 @@ server {
     proxy_pass http://gitlab;
   }
 }
+<% end %>
 
 server {
   listen      <%= @https_boolean ? 443 : 80 %> default_server;
