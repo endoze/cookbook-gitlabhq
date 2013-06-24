@@ -46,3 +46,13 @@ execute "add-ruby-to-bash_profile" do
   group   node[:gitlab][:group]
   creates "#{node[:gitlab][:marker_dir]}/.bash_profile-set"
 end
+
+execute "git-config-username" do
+  command "sudo -u git -H bash -l -c \"git config --global user.name Gitlab\""
+  creates "#{node[:gitlab][:marker_dir]}/.git_config_username"
+end
+
+execute "git-config-email" do
+  command "sudo -u git -H bash -l -c \"git config --global user.email gitlab@#{fqdn}\""
+  creates "#{node[:gitlab][:marker_dir]}/.git_config_email"
+end
