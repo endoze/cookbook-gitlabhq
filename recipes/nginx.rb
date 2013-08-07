@@ -40,3 +40,7 @@ end
 link "/etc/nginx/sites-enabled/gitlab.conf" do
   to '/etc/nginx/sites-available/gitlab.conf'
 end
+
+file "/etc/nginx/sites-enabled/default" do
+  action :delete
+end
