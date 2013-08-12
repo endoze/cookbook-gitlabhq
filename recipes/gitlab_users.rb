@@ -32,8 +32,8 @@ end
 
 # Add ruby to path
 template   "#{node[:gitlab][:home]}/.bashrc" do
-  owner    "#{node[:gitlab][:user]}"
-  group    "#{node[:gitlab][:user]}"
+  owner    node[:gitlab][:user]
+  group    node[:gitlab][:user]
   mode     0644
   source   'bashrc.erb'
   variables(
