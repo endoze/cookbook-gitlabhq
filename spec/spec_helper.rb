@@ -1,7 +1,7 @@
-require 'chefspec'
+require "chefspec"
 require 'fauxhai'
 
-RSpec.configure do |config|
-  config.filter_run :focus => true
-  config.run_all_when_everything_filtered = true
-end
+CHEF_RUN_OPTIONS = {
+    :platform => 'ubuntu',
+    :version  => '12.04'
+}

@@ -1,9 +1,12 @@
 language: ruby
 gemfile:
-   - Gemfile
+  - Gemfile
 rvm:
   - 1.9.2
   - 1.9.3
-script: 
-  - bundle exec rake foodcritic
-  - bundle exec rake knife
+bundler_args: --without integration
+before_script: bundle exec berks install
+script: bundle exec rake cookbook:test
+notifications:
+  email:
+    - chris@wideeyelabs.com
