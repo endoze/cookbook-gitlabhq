@@ -1,9 +1,16 @@
 # Include cookbook dependencies
-%w{ ruby_build build-essential
-    readline sudo openssh xml zlib python::package python::pip
-    redisio::install redisio::enable }.each do |requirement|
-  include_recipe requirement
-end
+
+include_recipe 'ruby_build'
+include_recipe 'build-essential'
+include_recipe 'readline'
+include_recipe 'sudo'
+include_recipe 'openssh'
+include_recipe 'xml'
+include_recipe 'zlib'
+include_recipe 'python::package'
+include_recipe 'python::pip'
+include_recipe 'redisio::install'
+include_recipe 'redisio::enable'
 
 # Install ruby
 ruby_build_ruby node[:gitlab][:install_ruby]
