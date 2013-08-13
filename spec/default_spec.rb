@@ -1,4 +1,4 @@
-require_relative 'spec_helper'
+require 'spec_helper'
 
 describe 'gitlabhq::default' do
   let (:chef_run) { ChefSpec::ChefRunner.new.converge described_cookbook }
