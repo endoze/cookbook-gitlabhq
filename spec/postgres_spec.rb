@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative 'spec_helper'
 
 describe 'gitlabhq::postgres' do
   let (:chef_run) { ChefSpec::ChefRunner.new.converge 'gitlabhq::postgres' }

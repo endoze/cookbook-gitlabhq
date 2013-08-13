@@ -1,14 +1,14 @@
-require 'spec_helper'
+require_relative 'spec_helper'
 
 describe 'gitlabhq::nginx' do
-  let (:chef_run) { ChefSpec::ChefRunner.new.converge 'gitlabhq::default' }
+  let (:chef_run) { ChefSpec::ChefRunner.new.converge 'gitlabhq' }
 
   describe 'when https is true' do
     it 'should create an ssl key' do
-      expect(chef_run).to create_file "/etc/nginx/#{node[:gitlab][:ssl_certificate_key]}"
+      pending 'Your recipe examples go here.'
     end
     it 'should create an ssl cert' do
-      expect(chef_run).to create_file "/etc/nginx/#{node[:gitlab][:ssl_certificate]}"
+      pending 'Your recipe examples go here.'
     end
   end
 

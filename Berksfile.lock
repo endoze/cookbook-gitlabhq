@@ -1,4 +1,52 @@
 {
   "sources": {
+    "gitlabhq": {
+      "path": "."
+    },
+    "yumrepo": {
+      "locked_version": "0.16.6"
+    },
+    "yum": {
+      "locked_version": "2.1.0"
+    },
+    "build-essential": {
+      "locked_version": "1.3.4"
+    },
+    "readline": {
+      "locked_version": "0.0.3"
+    },
+    "sudo": {
+      "locked_version": "2.1.2"
+    },
+    "openssh": {
+      "locked_version": "1.1.4"
+    },
+    "xml": {
+      "locked_version": "1.1.2"
+    },
+    "zlib": {
+      "locked_version": "2.0.0"
+    },
+    "python": {
+      "locked_version": "1.3.0"
+    },
+    "redisio": {
+      "locked_version": "1.4.1"
+    },
+    "ulimit": {
+      "locked_version": "0.2.0"
+    },
+    "ruby_build": {
+      "locked_version": "0.8.0"
+    },
+    "mysql": {
+      "locked_version": "2.1.2"
+    },
+    "openssl": {
+      "locked_version": "1.0.2"
+    },
+    "postgresql": {
+      "locked_version": "2.2.2"
+    }
   }
 }
