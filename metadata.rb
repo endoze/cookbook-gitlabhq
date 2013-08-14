@@ -18,6 +18,7 @@ depends 'redisio'
 depends 'ruby_build'
 depends 'mysql'
 depends 'postgresql'
+depends 'database'
 
 %w{ debian ubuntu }.each do |os|
     supports os
