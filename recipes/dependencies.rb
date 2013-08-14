@@ -1,5 +1,4 @@
 # Include cookbook dependencies
-
 include_recipe 'ruby_build'
 include_recipe 'build-essential'
 include_recipe 'readline'
@@ -24,36 +23,20 @@ node[:gitlab][:packages].each do |pkg|
 end
 
 # Install required Ruby Gems for Gitlab
-%w{ charlock_holmes bundler rake }.each do |gempkg|
+node[:gitlab][:gems].each do |gempkg|
   gem_package gempkg do
     action :install
   end
 end
 
 # Install pygments from pip
-python_pip 'pygments' do
-  action :install
+node[:gitlab][:python_packages].each do |pypkg|
+  python_pip pypkg do
+    action :install
+  end
 end
 
 # Set up redis for Gitlab hooks
 link '/usr/bin/redis-cli' do
   to '/usr/local/bin/redis-cli'
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
