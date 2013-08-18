@@ -7,17 +7,16 @@
 # MIT License
 #
 
-include_recipe 'gitlabhq::dependencies'
-
-include_recipe 'gitlabhq::gitlab_users'
-
-include_recipe 'gitlabhq::gitlab_shell'
-
-include_recipe 'gitlabhq::database'
-
-include_recipe 'gitlabhq::gitlab'
-
-include_recipe 'gitlabhq::nginx'
+%w{
+  gitlabhq::dependencies
+  gitlabhq::gitlab_users
+  gitlabhq::gitlab_shell
+  gitlabhq::database
+  gitlabhq::gitlab
+  gitlabhq::nginx
+}.each do |recipe|
+    include_recipe recipe
+  end
 
 # Start gitlab and nginx service
 %w{ nginx }.each do |svc|
