@@ -6,7 +6,7 @@ rvm:
   - 1.9.3
 bundler_args: --without integration
 before_script: bundle exec berks install
-script: bundle exec rake cookbook:test
+script: bundle exec strainer test
 notifications:
   email:
     - chris@wideeyelabs.com
