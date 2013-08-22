@@ -8,8 +8,8 @@
 #
 
 %w{
-  git::source
   gitlabhq::dependencies
+  gitlabhq::git
   gitlabhq::gitlab_users
   gitlabhq::gitlab_shell
   gitlabhq::database
