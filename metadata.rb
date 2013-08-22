@@ -20,6 +20,7 @@ depends 'mysql'
 depends 'postgresql'
 depends 'database'
 depends 'backup'
+depends 'git'
 
 %w{ debian ubuntu }.each do |os|
     supports os
