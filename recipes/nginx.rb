@@ -27,7 +27,6 @@ template   '/etc/nginx/sites-available/gitlab.conf' do
   group    'root'
   mode     0644
   source   'gitlab.conf.erb'
-  notifies :restart, 'service[nginx]'
   variables(
     :fqdn                => node[:fqdn],
     :gitlab_app_home     => node[:gitlab][:app_home],
