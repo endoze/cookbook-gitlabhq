@@ -18,6 +18,8 @@ template "#{node[:gitlab][:app_home]}/config/gitlab.yml" do
     :https_boolean    => node[:gitlab][:https],
     :git_user         => node[:gitlab][:git_user],
     :git_home         => node[:gitlab][:git_home],
+    :satellite_path   => node[:gitlab][:satellite_path],
+    :git_path         => "#{node[:git][:prefix]}/bin/git",
     :backup_path      => node[:gitlab][:backup_path],
     :backup_keep_time => node[:gitlab][:backup_keep_time],
     :app_home         => node[:gitlab][:home],
@@ -48,6 +50,14 @@ directory "#{node[:gitlab][:app_home]}/tmp/sockets" do
   group   node[:gitlab][:group]
   mode    0755
   action  :create
+end
+
+# Create directory for satellite repos
+directory node[:gitlab][:satellite_path] do
+  user   node[:gitlab][:user]
+  group  node[:gitlab][:group]
+  mode   0755
+  action :create
 end
 
 # Create the gitlab Backup folder

@@ -3,6 +3,11 @@ ssl_cert     = node[:gitlab][:ssl_certificate]
 https        = node[:gitlab][:https]
 ssl_req      = node[:gitlab][:ssl_req]
 
+
+file "/etc/nginx/sites-enabled/default" do
+  action :delete
+end
+
 execute 'create-ssl-key' do
   cwd '/etc/nginx'
   user  'root'

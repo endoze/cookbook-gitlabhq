@@ -22,18 +22,18 @@ directory "#{node[:gitlab][:home]}/.ssh" do
 end
 
 # Add ruby to path
-execute 'add-ruby-to-bashrc' do
-  command "echo \"export PATH=#{node[:gitlab][:ruby_dir]}:$PATH\" >> #{node[:gitlab][:home]}/.bashrc && touch .markers/.bashrc-set"
-  cwd     node[:gitlab][:home]
-  user    node[:gitlab][:user]
-  group   node[:gitlab][:group]
-  creates "#{node[:gitlab][:marker_dir]}/.bashrc-set"
+template   "#{node[:gitlab][:home]}/.bashrc" do
+  owner    node[:gitlab][:user]
+  group    node[:gitlab][:user]
+  mode     0644
+  source   'bashrc.erb'
+  variables(
+    :ruby_dir => node[:gitlab][:ruby_dir]
+  )
 end
 
-execute 'add-ruby-to-bash_profile' do
-  command "echo \"export PATH=#{node[:gitlab][:ruby_dir]}:$PATH\" >> #{node[:gitlab][:home]}/.bash_profile && touch .markers/.bash_profile-set"
-  cwd     node[:gitlab][:home]
-  user    node[:gitlab][:user]
-  group   node[:gitlab][:group]
-  creates "#{node[:gitlab][:marker_dir]}/.bash_profile-set"
+execute "git-config-email" do
+  command "sudo -u git -H bash -l -c \"git config --global user.name GitLab\""
+  command "sudo -u git -H bash -l -c \"git config --global user.email gitlab@#{node[:fqdn]}\""
+  creates "#{node[:gitlab][:marker_dir]}/.git_config_email"
 end
