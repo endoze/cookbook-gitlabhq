@@ -1,8 +1,18 @@
 # Include cookbook dependencies
-%w{ ruby_build build-essential
-    readline sudo openssh xml zlib python::package python::pip
-    redisio::install redisio::enable }.each do |requirement|
-  include_recipe requirement
+%w{
+  ruby_build
+  build-essential
+  readline
+  sudo
+  openssh
+  xml
+  zlib
+  python::package
+  python::pip
+  redisio::install
+  redisio::enable
+}.each do |recipe|
+  include_recipe recipe
 end
 
 # Install ruby
@@ -17,36 +27,20 @@ node[:gitlab][:packages].each do |pkg|
 end
 
 # Install required Ruby Gems for Gitlab
-%w{ charlock_holmes bundler rake }.each do |gempkg|
+node[:gitlab][:gems].each do |gempkg|
   gem_package gempkg do
     action :install
   end
 end
 
 # Install pygments from pip
-python_pip "pygments" do
-  action :install
+node[:gitlab][:python_packages].each do |pypkg|
+  python_pip pypkg do
+    action :install
+  end
 end
 
 # Set up redis for Gitlab hooks
-link "/usr/bin/redis-cli" do
+link '/usr/bin/redis-cli' do
   to '/usr/local/bin/redis-cli'
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

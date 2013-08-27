@@ -18,6 +18,8 @@ template "#{node[:gitlab][:app_home]}/config/gitlab.yml" do
     :https_boolean    => node[:gitlab][:https],
     :git_user         => node[:gitlab][:git_user],
     :git_home         => node[:gitlab][:git_home],
+    :satellite_path   => node[:gitlab][:satellite_path],
+    :git_path         => "#{node[:git][:prefix]}/bin/git",
     :backup_path      => node[:gitlab][:backup_path],
     :backup_keep_time => node[:gitlab][:backup_keep_time],
     :app_home         => node[:gitlab][:home],
@@ -50,6 +52,14 @@ directory "#{node[:gitlab][:app_home]}/tmp/sockets" do
   action  :create
 end
 
+# Create directory for satellite repos
+directory node[:gitlab][:satellite_path] do
+  user   node[:gitlab][:user]
+  group  node[:gitlab][:group]
+  mode   0755
+  action :create
+end
+
 # Create the gitlab Backup folder
 directory node[:gitlab][:backup_path] do
   owner  node[:gitlab][:user]
@@ -61,7 +71,7 @@ end
 # Install gems with bundle install
 without_group = node[:gitlab][:database][:type] == 'mysql' ? 'postgres' : 'mysql'
 
-execute "gitlab-bundle-install" do
+execute 'gitlab-bundle-install' do
   command "bundle install --without development test #{without_group} --deployment"
   cwd     node[:gitlab][:app_home]
   user    node[:gitlab][:user]
@@ -71,7 +81,7 @@ execute "gitlab-bundle-install" do
 end
 
 # Setup database for Gitlab
-execute "gitlab-bundle-rake" do
+execute 'gitlab-bundle-rake' do
   command "echo 'yes' | bundle exec rake gitlab:setup RAILS_ENV=production && touch #{node[:gitlab][:marker_dir]}/.gitlab-setup"
   cwd     node[:gitlab][:app_home]
   user    node[:gitlab][:user]
@@ -80,7 +90,7 @@ execute "gitlab-bundle-rake" do
 end
 
 # Render gitlab init script
-template "/etc/init.d/gitlab" do
+template '/etc/init.d/gitlab' do
   owner  'root'
   group  'root'
   mode   0755

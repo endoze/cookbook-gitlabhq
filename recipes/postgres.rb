@@ -16,12 +16,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-include_recipe 'postgresql::ruby'
+include_recipe 'database::postgresql'
 
 # Enable secure password generation
 ::Chef::Recipe.send(:include, Opscode::OpenSSL::Password)
 node.set_unless[:gitlab][:database][:password] = secure_password
-ruby_block "save node data" do
+ruby_block 'save node data' do
   block do
     node.save
   end
