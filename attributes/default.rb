@@ -86,7 +86,7 @@ default[:openssh][:server][:permit_user_environment] = 'yes'
 
 # GITLAB
 default[:gitlab][:gitlab_url]          = 'https://github.com/gitlabhq/gitlabhq'
-default[:gitlab][:gitlab_branch]       = 'v5.2.0'
+default[:gitlab][:gitlab_branch]       = 'v5.3.0'
 default[:gitlab][:backup_keep_time]    = 604800
 default[:gitlab][:https]               = true
 default[:gitlab][:ssl_certificate]     = "/etc/nginx/#{node[:fqdn]}.crt"
