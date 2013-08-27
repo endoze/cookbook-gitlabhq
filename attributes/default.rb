@@ -69,7 +69,7 @@ default[:gitlab][:marker_dir]  = "#{node[:gitlab][:home]}/.markers"
 # GITLAB SHELL
 default[:gitlab][:ssh_port]            = 22
 default[:gitlab][:gitlab_shell_url]    = 'https://github.com/gitlabhq/gitlab-shell'
-default[:gitlab][:gitlab_shell_branch] = 'v1.4.0'
+default[:gitlab][:gitlab_shell_branch] = 'v1.5.0'
 default[:gitlab][:gitlab_shell_home]   = "#{node[:gitlab][:home]}/gitlab-shell"
 default[:gitlab][:gitlab_shell_user]   = 'git'
 default[:gitlab][:repos_path]          = "#{node[:gitlab][:home]}/repositories"
@@ -86,7 +86,7 @@ default[:openssh][:server][:permit_user_environment] = 'yes'
 
 # GITLAB
 default[:gitlab][:gitlab_url]          = 'https://github.com/gitlabhq/gitlabhq'
-default[:gitlab][:gitlab_branch]       = 'v5.3.0'
+default[:gitlab][:gitlab_branch]       = 'v5.4.0'
 default[:gitlab][:backup_keep_time]    = 604800
 default[:gitlab][:https]               = true
 default[:gitlab][:ssl_certificate]     = "/etc/nginx/#{node[:fqdn]}.crt"
