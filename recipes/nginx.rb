@@ -3,8 +3,13 @@ ssl_cert     = node[:gitlab][:ssl_certificate]
 https        = node[:gitlab][:https]
 ssl_req      = node[:gitlab][:ssl_req]
 
-execute "create-ssl-key" do
-  cwd "/etc/nginx"
+
+file "/etc/nginx/sites-enabled/default" do
+  action :delete
+end
+
+execute 'create-ssl-key' do
+  cwd '/etc/nginx'
   user  'root'
   group 'root'
   umask 0077
@@ -12,8 +17,8 @@ execute "create-ssl-key" do
   not_if { !https || File.exists?(ssl_cert_key) }
 end
 
-execute "create-ssl-cert" do
-  cwd "/etc/nginx"
+execute 'create-ssl-cert' do
+  cwd '/etc/nginx'
   user 'root'
   group 'root'
   umask 0077
@@ -22,12 +27,11 @@ execute "create-ssl-cert" do
 end
 
 # Render nginx default vhost config
-template   "/etc/nginx/sites-available/gitlab.conf" do
+template   '/etc/nginx/sites-available/gitlab.conf' do
   owner    'root'
   group    'root'
   mode     0644
   source   'gitlab.conf.erb'
-  notifies :restart, 'service[nginx]'
   variables(
     :fqdn                => node[:fqdn],
     :gitlab_app_home     => node[:gitlab][:app_home],
@@ -37,7 +41,7 @@ template   "/etc/nginx/sites-available/gitlab.conf" do
   )
 end
 
-link "/etc/nginx/sites-enabled/gitlab.conf" do
+link '/etc/nginx/sites-enabled/gitlab.conf' do
   to '/etc/nginx/sites-available/gitlab.conf'
 end
 

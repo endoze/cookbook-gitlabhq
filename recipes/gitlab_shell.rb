@@ -24,7 +24,7 @@ template "#{node[:gitlab][:gitlab_shell_home]}/config.yml" do
   )
 end
 
-execute "gitlab-shell-install" do
+execute 'gitlab-shell-install' do
   command "./bin/install && touch #{node[:gitlab][:marker_dir]}/.gitlab-shell-setup"
   cwd     node[:gitlab][:gitlab_shell_home]
   user    node[:gitlab][:user]

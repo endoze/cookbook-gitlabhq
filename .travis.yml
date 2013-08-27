@@ -1,13 +1,14 @@
 language: ruby
 gemfile:
-   - test/support/Gemfile
+  - Gemfile
 rvm:
   - 1.9.2
   - 1.9.3
-script: bundle exec rake foodcritic
+bundler_args: --without integration
+before_script: bundle exec berks install
+script: bundle exec strainer test
 notifications:
   email:
-    recipients:
-      - chris@wideeyelabs.com
+    - chris@wideeyelabs.com
     on_success: change
     on_failure: always
