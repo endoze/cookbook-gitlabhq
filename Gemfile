@@ -12,4 +12,4 @@ gem 'guard'
 gem 'guard-strainer'
 gem 'pry'
 gem 'pry-debugger'
-
+gem 'coveralls', require: false

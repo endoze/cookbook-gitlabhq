@@ -1,3 +1,6 @@
+require 'coveralls'
+Coveralls.wear!
+
 require 'chefspec'
 
 CHEF_RUN_OPTIONS = {
