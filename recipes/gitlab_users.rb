@@ -32,12 +32,6 @@ template   "#{node[:gitlab][:home]}/.bashrc" do
   )
 end
 
-execute "git-config-email" do
-  command "sudo -u git -H bash -l -c \"git config --global user.name GitLab\""
-  command "sudo -u git -H bash -l -c \"git config --global user.email gitlab@#{node[:fqdn]}\""
-  creates "#{node[:gitlab][:marker_dir]}/.git_config_email"
-end
-
 execute "git-config-username" do
   command "sudo -u git -H bash -l -c \"git config --global user.name Gitlab\""
   creates "#{node[:gitlab][:marker_dir]}/.git_config_username"

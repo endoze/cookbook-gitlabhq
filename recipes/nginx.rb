@@ -4,8 +4,9 @@ https        = node[:gitlab][:https]
 ssl_req      = node[:gitlab][:ssl_req]
 
 
-file "/etc/nginx/sites-enabled/default" do
-  action :delete
+service 'nginx' do
+  supports :status => true, :restart => true, :reload => true
+  action [ :enable, :start ]
 end
 
 execute 'create-ssl-key' do
@@ -39,12 +40,9 @@ template   '/etc/nginx/sites-available/gitlab.conf' do
     :ssl_certificate     => node[:gitlab][:ssl_certificate],
     :ssl_certificate_key => node[:gitlab][:ssl_certificate_key]
   )
+  notifies :restart, 'service[nginx]'
 end
 
 link '/etc/nginx/sites-enabled/gitlab.conf' do
   to '/etc/nginx/sites-available/gitlab.conf'
-end
-
-file "/etc/nginx/sites-enabled/default" do
-  action :delete
 end
