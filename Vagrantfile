@@ -22,8 +22,12 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.provision :chef_solo do |chef|
+    chef.data_bags_path = "data_bags"
+
     chef.add_recipe "sudo"
     chef.add_recipe "gitlabhq::default"
+    chef.add_recipe "gitlabhq::backup"
+    
     chef.json = {
       :mysql => {
         :server_root_password => 'rootpass',

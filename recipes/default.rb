@@ -15,6 +15,7 @@
   gitlabhq::database
   gitlabhq::gitlab
   gitlabhq::nginx
+  gitlabhq::backup
 }.each do |recipe|
   include_recipe recipe
 end

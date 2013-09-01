@@ -12,4 +12,6 @@ gem 'guard'
 gem 'guard-strainer'
 gem 'pry'
 gem 'pry-debugger'
+gem 'pry-remote'
+gem 'knife-solo_data_bag'
 gem 'coveralls', require: false
