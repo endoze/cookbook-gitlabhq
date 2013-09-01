@@ -4,8 +4,9 @@ https        = node[:gitlab][:https]
 ssl_req      = node[:gitlab][:ssl_req]
 
 
-file "/etc/nginx/sites-enabled/default" do
-  action :delete
+service 'nginx' do
+  supports :status => true, :restart => true, :reload => true
+  action [ :enable, :start ]
 end
 
 execute 'create-ssl-key' do

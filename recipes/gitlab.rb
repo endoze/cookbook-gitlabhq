@@ -20,9 +20,9 @@ template '/etc/init.d/gitlab' do
   )
 end
 
-service "gitlab" do
-    supports :status => true, :restart => true, :reload => true
-    action [ :enable, :start ]
+service 'gitlab' do
+  supports :status => true, :restart => true, :reload => true
+  action [ :enable, :start ]
 end
 
 # Render gitlab config file
