@@ -3,7 +3,9 @@ require_relative 'spec_helper'
 describe 'gitlabhq::nginx' do
   context 'when https is true' do
     before(:each) do
-      @chef_run               = ChefSpec::ChefRunner.new(CHEF_RUN_OPTIONS)
+      @chef_run                       = ChefSpec::ChefRunner.new(CHEF_RUN_OPTIONS)
+      @chef_run.node.set[:mysql]      = MYSQL_OPTIONS
+      @chef_run.node.set[:postgresql] = POSTGRES_OPTIONS
       @chef_run_with_converge = @chef_run.converge 'gitlabhq::nginx'
 
       @ssl_req      = @chef_run.node[:gitlab][:ssl_req]
