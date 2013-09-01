@@ -16,24 +16,5 @@
   gitlabhq::gitlab
   gitlabhq::nginx
 }.each do |recipe|
-    include_recipe recipe
-  end
-
-# Start gitlab and nginx service
-%w{ nginx }.each do |svc|
-  service svc do
-    action [ :enable, :start]
-  end
-end
-
-execute "sidekiq-start" do
-  command "sudo -u git -H bash -l -c \"RAILS_ENV=production bundle exec rake sidekiq:start\""
-  cwd     node[:gitlab][:app_home]
-  creates "#{node[:gitlab][:app_home]}/tmp/pids/sidekiq.pid"
-end
-
-execute "gitlab-start" do
-  command "sudo -u git -H bash -l -c \"RAILS_ENV=production bundle exec puma -C #{node[:gitlab][:app_home]}/config/puma.rb\""
-  cwd     node[:gitlab][:app_home]
-  creates "#{node[:gitlab][:app_home]}/tmp/pids/puma.pid"
+  include_recipe recipe
 end
