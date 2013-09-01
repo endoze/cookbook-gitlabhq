@@ -90,6 +90,7 @@ Strainerfile
 ###########
 .vagrant
 Vagrantfile
+data_bags/
 
 # Travis #
 ##########

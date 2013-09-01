@@ -53,7 +53,7 @@ default[:git][:checksum] = "ed6dbf91b56c1540627563b5e8683fe726dac881ae028f3f1765
 
 # DATABASE
 default[:gitlab][:database][:type]     = 'mysql'
-default[:gitlab][:database][:adapter]  =  default[:gitlab][:database][:type] == 'mysql' ? 'mysql2' : 'postgresql'
+default[:gitlab][:database][:adapter]  = default[:gitlab][:database][:type] == 'mysql' ? 'mysql2' : 'postgresql'
 default[:gitlab][:database][:encoding] = default[:gitlab][:database][:type] == 'mysql' ? 'utf8' : 'unicode'
 default[:gitlab][:database][:host]     = 'localhost'
 default[:gitlab][:database][:pool]     = 5
@@ -98,7 +98,8 @@ default[:gitlab][:gems]                = %w{ charlock_holmes bundler rake }
 default[:gitlab][:python_packages]     = %w{ pygments }
 
 # BACKUP
-default[:gitlab][:backup][:s3_region] = 'us-east-1'
-default[:gitlab][:backup][:s3_bucket] = 'gitlab-repo-backups'
-default[:gitlab][:backup][:s3_path]   = '/backups'
-default[:gitlab][:backup][:s3_keep]   = 10
+default[:gitlab][:backup][:s3_region]          = 'us-east-1'
+default[:gitlab][:backup][:s3_bucket]          = 'gitlab-repo-backups'
+default[:gitlab][:backup][:s3_path]            = '/backups'
+default[:gitlab][:backup][:s3_keep]            = 10
+default[:gitlab][:backup][:backups_enabled]    = true
