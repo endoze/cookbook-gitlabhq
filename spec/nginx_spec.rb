@@ -14,19 +14,19 @@ describe 'gitlabhq::nginx' do
     end
 
     it 'should create an ssl key' do
-      expect(@chef_run_with_converge).to execute_command "openssl genrsa 2048 > #{@ssl_cert_key}"
+      expect(@chef_run).to execute_command "openssl genrsa 2048 > #{@ssl_cert_key}"
     end
 
     it 'should create an ssl cert' do
-      expect(@chef_run_with_converge).to execute_command "openssl req -subj \"#{@ssl_req}\" -new -x509 -nodes -sha1 -days 3650 -key #{@ssl_cert_key} > #{@ssl_cert}"
+      expect(@chef_run).to execute_command "openssl req -subj \"#{@ssl_req}\" -new -x509 -nodes -sha1 -days 3650 -key #{@ssl_cert_key} > #{@ssl_cert}"
     end
 
     it "should create an nginx config file for gitlab" do
-      expect(@chef_run_with_converge).to create_file '/etc/nginx/sites-available/gitlab.conf'
+      expect(@chef_run).to create_file '/etc/nginx/sites-available/gitlab.conf'
     end
 
     it "should symlink the gitlab nginx config to sites-enabled" do
-      expect(@chef_run_with_converge.link('/etc/nginx/sites-enabled/gitlab.conf')).to link_to '/etc/nginx/sites-available/gitlab.conf'
+      expect(@chef_run.link('/etc/nginx/sites-enabled/gitlab.conf')).to link_to '/etc/nginx/sites-available/gitlab.conf'
     end
   end
 end

@@ -14,18 +14,11 @@ describe 'gitlabhq::default' do
     gitlabhq::gitlab_shell
     gitlabhq::database
     gitlabhq::gitlab
-    gitlabhq::nginx }.each do |recipe|
-      it "should include recipe #{recipe}" do
-        expect(@chef_run_with_converge).to include_recipe recipe
-      end
+    gitlabhq::nginx
+  }.each do |recipe|
+    it "should include recipe #{recipe}" do
+      expect(@chef_run_with_converge).to include_recipe recipe
     end
-
-  it "should set nginx service to start on boot" do
-    expect(@chef_run_with_converge).to set_service_to_start_on_boot 'nginx'
-  end
-
-  it "should start nginx service" do
-    expect(@chef_run_with_converge).to start_service 'nginx'
   end
 end
 
