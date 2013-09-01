@@ -29,7 +29,8 @@ end
 # Install required Ruby Gems for Gitlab
 node[:gitlab][:gems].each do |gempkg|
   gem_package gempkg do
-    action :install
+    action     :install
+    gem_binary "#{node[:gitlab][:ruby_dir]}/gem"
   end
 end
 
