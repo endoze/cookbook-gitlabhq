@@ -8,6 +8,23 @@ git node[:gitlab][:app_home] do
   group       node[:gitlab][:group]
 end
 
+# Render gitlab init script
+template '/etc/init.d/gitlab' do
+  owner  'root'
+  group  'root'
+  mode   0755
+  source 'gitlab.init.erb'
+  variables(
+    :app_home  => node[:gitlab][:app_home],
+    :git_user  => node[:gitlab][:user]
+  )
+end
+
+service "gitlab" do
+    supports :status => true, :restart => true, :reload => true
+    action [ :enable, :start ]
+end
+
 # Render gitlab config file
 template "#{node[:gitlab][:app_home]}/config/gitlab.yml" do
   owner  node[:gitlab][:user]
@@ -25,6 +42,7 @@ template "#{node[:gitlab][:app_home]}/config/gitlab.yml" do
     :app_home         => node[:gitlab][:home],
     :ssh_port         => node[:gitlab][:ssh_port]
   )
+  notifies :restart, 'service[gitlab]'
 end
 
 # Write the database.yml
@@ -42,6 +60,7 @@ template "#{node[:gitlab][:app_home]}/config/database.yml" do
     :username => node[:gitlab][:database][:username],
     :password => node[:gitlab][:database][:password]
   )
+  notifies :restart, 'service[gitlab]'
 end
 
 # Create directory for gitlab socket
@@ -89,18 +108,6 @@ execute 'gitlab-bundle-rake' do
   creates "#{node[:gitlab][:marker_dir]}/.gitlab-setup"
 end
 
-# Render gitlab init script
-template '/etc/init.d/gitlab' do
-  owner  'root'
-  group  'root'
-  mode   0755
-  source 'gitlab.init.erb'
-  variables(
-    :app_home  => node[:gitlab][:app_home],
-    :git_user  => node[:gitlab][:user]
-  )
-end
-
 # Render puma template
 template  "#{node[:gitlab][:app_home]}/config/puma.rb" do
   owner   node[:gitlab][:user]
@@ -111,4 +118,5 @@ template  "#{node[:gitlab][:app_home]}/config/puma.rb" do
     :gitlab_app_home    => node[:gitlab][:app_home],
     :gitlab_environment => node[:gitlab][:environment]
   )
+  notifies :restart, 'service[gitlab]'
 end

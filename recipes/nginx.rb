@@ -39,12 +39,9 @@ template   '/etc/nginx/sites-available/gitlab.conf' do
     :ssl_certificate     => node[:gitlab][:ssl_certificate],
     :ssl_certificate_key => node[:gitlab][:ssl_certificate_key]
   )
+  notifies :restart, 'service[nginx]'
 end
 
 link '/etc/nginx/sites-enabled/gitlab.conf' do
   to '/etc/nginx/sites-available/gitlab.conf'
-end
-
-file "/etc/nginx/sites-enabled/default" do
-  action :delete
 end
