@@ -118,6 +118,16 @@ Just include `gitlabhq` in your node's `run_list`:
 
 ```
 
+GitLab Ci now comes by default with this recipe. To disable the
+installation/configuration of it, override the attribute
+`node[:gitlab][:ci][:ci_enabled]` and set it to false.
+
+In addition to setting up GitLab and Gitlab Ci, it will also configure
+the host to have hostfile entries for both. The values for these entries
+can be overriden by setting `node[:gitlab][:server_name]` and
+`node[:gitlab][:ci][:server_name]`. Be aware however that these values
+are also used by nginx for serving both web apps.
+
 Contributing
 ------------
 1. Fork the repository on Github
