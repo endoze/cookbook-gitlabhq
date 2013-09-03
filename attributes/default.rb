@@ -41,7 +41,6 @@ else
 end
 
 default[:build_essential][:compiletime] = true
-default[:nginx][:default_site_enabled] = false
 default[:gitlab][:install_ruby] = '1.9.3-p392'
 default[:gitlab][:ruby_dir]     = "/usr/local/ruby/#{node[:gitlab][:install_ruby]}/bin"
 
@@ -91,6 +90,7 @@ default[:gitlab][:gitlab_url]          = 'https://github.com/gitlabhq/gitlabhq'
 default[:gitlab][:gitlab_branch]       = 'v5.4.0'
 default[:gitlab][:backup_keep_time]    = 604800
 default[:gitlab][:https]               = true
+default[:gitlab][:server_name]         = 'gitlab.local'
 default[:gitlab][:ssl_certificate]     = "/etc/nginx/#{node[:fqdn]}.crt"
 default[:gitlab][:ssl_certificate_key] = "/etc/nginx/#{node[:fqdn]}.key"
 default[:gitlab][:ssl_req]             = "/C=US/ST=Several/L=Locality/O=Example/OU=Operations/CN=#{node[:fqdn]}/emailAddress=root@localhost"
@@ -103,3 +103,23 @@ default[:gitlab][:backup][:s3_bucket]          = 'gitlab-repo-backups'
 default[:gitlab][:backup][:s3_path]            = '/backups'
 default[:gitlab][:backup][:s3_keep]            = 10
 default[:gitlab][:backup][:backups_enabled]    = true
+
+# CI
+default[:gitlab][:ci][:ci_enabled]  = true
+default[:gitlab][:ci][:user]        = 'gitlab_ci'
+default[:gitlab][:ci][:group]       = 'gitlab_ci'
+default[:gitlab][:ci][:home]        = '/home/gitlab_ci'
+default[:gitlab][:ci][:app_home]    = "#{node[:gitlab][:ci][:home]}/gitlab-ci"
+default[:gitlab][:ci][:url]         = 'https://github.com/gitlabhq/gitlab-ci'
+default[:gitlab][:ci][:branch]      = 'v3.0.0'
+default[:gitlab][:ci][:environment] = 'production'
+default[:gitlab][:ci][:server_name] = 'gitlab_ci.local'
+
+# CI DATABASE
+default[:gitlab][:ci][:database][:type]     = 'mysql'
+default[:gitlab][:ci][:database][:adapter]  = default[:gitlab][:ci][:database][:type] == 'mysql' ? 'mysql2' : 'postgresql'
+default[:gitlab][:ci][:database][:encoding] = default[:gitlab][:ci][:database][:type] == 'mysql' ? 'utf8' : 'unicode'
+default[:gitlab][:ci][:database][:host]     = 'localhost'
+default[:gitlab][:ci][:database][:pool]     = 5
+default[:gitlab][:ci][:database][:database] = 'gitlab_ci'
+default[:gitlab][:ci][:database][:username] = 'gitlab_ci'

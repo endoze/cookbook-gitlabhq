@@ -34,6 +34,11 @@ Vagrant.configure("2") do |config|
         :server_debian_password => 'debpass',
         :server_repl_password => 'replpass'
       },
+      :gitlab => {
+        :ci => {
+          :allowed_urls => ['https://gitlab.local']
+        }
+      },
       :authorization => {
         :sudo => {
           :groups => ["admin", "wheel", "sysadmin"],
