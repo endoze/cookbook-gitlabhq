@@ -18,3 +18,5 @@ state_path "<%= @app_home %>/tmp/pids/puma.state"
 stdout_redirect "<%= @app_home %>/log/puma.stdout.log", "<%= @app_home %>/log/puma.stderr.log"
 
 bind "unix://<%= @app_home %>/tmp/sockets/<%= @app_name %>.socket"
+
+workers <%= @number_of_workers || 1 %>
