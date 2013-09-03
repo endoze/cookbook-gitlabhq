@@ -19,3 +19,7 @@
 }.each do |recipe|
   include_recipe recipe
 end
+
+if node[:gitlab][:ci][:ci_enabled]
+  include_recipe 'gitlabhq::ci'
+end

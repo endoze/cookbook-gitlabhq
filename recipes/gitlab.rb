@@ -16,13 +16,22 @@ template '/etc/init.d/gitlab' do
   source 'gitlab.init.erb'
   variables(
     :app_home  => node[:gitlab][:app_home],
-    :git_user  => node[:gitlab][:user]
+    :app_user  => node[:gitlab][:user]
   )
 end
 
 service 'gitlab' do
   supports :status => true, :restart => true, :reload => true
   action [ :enable, :start ]
+end
+
+local_aliases = [node[:fqdn], node[:gitlab][:server_name]]
+local_aliases << node[:gitlab][:ci][:server_name] if node[:gitlab][:ci][:ci_enabled]
+
+hosts_file_entry '127.0.0.1' do
+  hostname 'localhost'
+  aliases  local_aliases
+  comment  "Set aliases for localhost"
 end
 
 # Render gitlab config file
@@ -114,9 +123,10 @@ template  "#{node[:gitlab][:app_home]}/config/puma.rb" do
   group   node[:gitlab][:group]
   mode    0644
   variables(
-    :fqdn               => node[:fqdn],
-    :gitlab_app_home    => node[:gitlab][:app_home],
-    :gitlab_environment => node[:gitlab][:environment]
+    :fqdn        => node[:fqdn],
+    :app_name    => 'gitlab',
+    :app_home    => node[:gitlab][:app_home],
+    :environment => node[:gitlab][:environment]
   )
   notifies :restart, 'service[gitlab]'
 end

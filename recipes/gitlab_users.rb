@@ -41,3 +41,24 @@ execute "git-config-email" do
   command "sudo -u git -H bash -l -c \"git config --global user.email gitlab@#{node[:fqdn]}\""
   creates "#{node[:gitlab][:marker_dir]}/.git_config_email"
 end
+
+if node[:gitlab][:ci][:ci_enabled]
+  # CREATE GIT USER
+  user node[:gitlab][:ci][:user] do
+    comment  'Gitlab CI User'
+    home     node[:gitlab][:ci][:home]
+    shell    '/bin/bash'
+    supports :manage_home => true
+  end
+
+  # Add ruby to path
+  template   "#{node[:gitlab][:ci][:home]}/.bashrc" do
+    owner    node[:gitlab][:ci][:user]
+    group    node[:gitlab][:ci][:user]
+    mode     0644
+    source   'bashrc.erb'
+    variables(
+      :ruby_dir => node[:gitlab][:ruby_dir]
+    )
+  end
+end
