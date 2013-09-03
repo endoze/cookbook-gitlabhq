@@ -32,17 +32,46 @@ template   '/etc/nginx/sites-available/gitlab.conf' do
   owner    'root'
   group    'root'
   mode     0644
-  source   'gitlab.conf.erb'
+  source   'nginx.conf.erb'
   variables(
-    :fqdn                => node[:fqdn],
-    :gitlab_app_home     => node[:gitlab][:app_home],
+    :server_name         => node[:gitlab][:server_name],
+    :app_name            => 'gitlab',
+    :app_home            => node[:gitlab][:app_home],
     :https_boolean       => node[:gitlab][:https],
     :ssl_certificate     => node[:gitlab][:ssl_certificate],
-    :ssl_certificate_key => node[:gitlab][:ssl_certificate_key]
+    :ssl_certificate_key => node[:gitlab][:ssl_certificate_key],
+    :default_server      =>  true
   )
   notifies :restart, 'service[nginx]'
 end
 
 link '/etc/nginx/sites-enabled/gitlab.conf' do
   to '/etc/nginx/sites-available/gitlab.conf'
+end
+
+link '/etc/nginx/sites-enabled/default' do
+  action :delete
+end
+
+if node[:gitlab][:ci][:ci_enabled]
+  # Render nginx vhost config
+  template   '/etc/nginx/sites-available/gitlab_ci.conf' do
+    owner    'root'
+    group    'root'
+    mode     0644
+    source   'nginx.conf.erb'
+    variables(
+      :server_name         => node[:gitlab][:ci][:server_name],
+      :app_name            => 'gitlab-ci',
+      :app_home            => node[:gitlab][:ci][:app_home],
+      :https_boolean       => node[:gitlab][:https],
+      :ssl_certificate     => node[:gitlab][:ssl_certificate],
+      :ssl_certificate_key => node[:gitlab][:ssl_certificate_key]
+    )
+    notifies :restart, 'service[nginx]'
+  end
+
+  link '/etc/nginx/sites-enabled/gitlab_ci.conf' do
+    to '/etc/nginx/sites-available/gitlab_ci.conf'
+  end
 end

@@ -61,3 +61,34 @@ postgresql_database_user database_user do
   database_name   database
   action          :grant
 end
+
+if node[:gitlab][:ci][:ci_enabled]
+  node.set_unless[:gitlab][:ci][:database][:password] = secure_password
+  ruby_block 'save node data' do
+    block do
+      node.save
+    end
+    not_if { Chef::Config[:solo] }
+  end
+
+  ci_database          = node[:gitlab][:ci][:database][:database]
+  ci_database_user     = node[:gitlab][:ci][:database][:username]
+  ci_database_password = node[:gitlab][:ci][:database][:password]
+
+  postgresql_database ci_database do
+    connection   database_connection
+    action       :create
+  end
+
+  postgresql_database_user ci_database_user do
+    connection    database_connection
+    password      ci_database_password
+    database_name ci_database
+  end
+
+  postgresql_database_user ci_database_user do
+    connection    database_connection
+    database_name ci_database
+    action        :grant
+  end
+end

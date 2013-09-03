@@ -3,14 +3,14 @@ if node[:gitlab][:backup][:backups_enabled]
 
   aws_credentials = data_bag_item('credentials', 'aws_credentials')
 
+  # Create a Backup gem configuration file
+  backup_generate_config node.name
+
   # Make Backup gem configuration file owned by backup user
   template '/opt/backup/config.rb' do
     cookbook 'backup'
     source   'config.rb.erb'
   end
-
-  # Create a Backup gem configuration file
-  backup_generate_config node.name
 
   # Install packages that backup gem depends on
   [ 'libxml2-dev', 'libxslt1-dev' ].each do |pkg|
