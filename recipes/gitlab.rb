@@ -123,10 +123,11 @@ template  "#{node[:gitlab][:app_home]}/config/puma.rb" do
   group   node[:gitlab][:group]
   mode    0644
   variables(
-    :fqdn        => node[:fqdn],
-    :app_name    => 'gitlab',
-    :app_home    => node[:gitlab][:app_home],
-    :environment => node[:gitlab][:environment]
+    :fqdn              => node[:fqdn],
+    :app_name          => 'gitlab',
+    :app_home          => node[:gitlab][:app_home],
+    :environment       => node[:gitlab][:environment],
+    :number_of_workers => node[:gitlab][:puma_workers]
   )
   notifies :restart, 'service[gitlab]'
 end
