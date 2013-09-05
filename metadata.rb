@@ -4,9 +4,8 @@ maintainer_email 'chris@wideeyelabs.com'
 license          'MIT License'
 description      'Installs/Configures Gitlab'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '0.4.1'
+version          '6.0.1'
 
-depends 'yumrepo'
 depends 'build-essential'
 depends 'readline'
 depends 'sudo'
@@ -21,6 +20,8 @@ depends 'postgresql'
 depends 'database'
 depends 'backup'
 depends 'hosts_file'
+depends 'nginx'
+depends 'git'
 
 %w{ debian ubuntu }.each do |os|
     supports os

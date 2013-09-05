@@ -6,20 +6,20 @@ describe 'gitlabhq::database' do
   end
 
   context 'when the database type is mysql' do
-    it 'it should include the gitlabhq::mysql recipe' do
+    it 'it should include the gitlabhq::database_mysql recipe' do
       @chef_run.node.set[:gitlab][:database][:type] = 'mysql'
       @chef_run.node.set[:mysql] = MYSQL_OPTIONS
       chef_run_with_converge = @chef_run.converge 'gitlabhq::database'
-      expect(chef_run_with_converge).to include_recipe 'gitlabhq::mysql'
+      expect(chef_run_with_converge).to include_recipe 'gitlabhq::database_mysql'
     end
   end
 
   context 'when the database type is postgres' do
-    it 'it should include the gitlabhq::postgres recipe' do
+    it 'it should include the gitlabhq::database_postgres recipe' do
       @chef_run.node.set[:gitlab][:database][:type] = 'postgres'
       @chef_run.node.set[:postgresql] = POSTGRES_OPTIONS
       chef_run_with_converge = @chef_run.converge 'gitlabhq::database'
-      expect(chef_run_with_converge).to include_recipe 'gitlabhq::postgres'
+      expect(chef_run_with_converge).to include_recipe 'gitlabhq::database_postgres'
     end
   end
 end

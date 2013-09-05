@@ -26,14 +26,14 @@ production: &base
     # relative_url_root: /gitlab
 
     # Uncomment and customize if you can't use the default user to run GitLab (default: 'git')
-    # user: git
+    user: <%= @git_user %>
 
     ## Email settings
     # Email address used in the "From" field in mails sent by GitLab
-    email_from: gitlab@<%= @fqdn %>
+    email_from: <%= @email_from %> 
 
     # Email address of your support contact (default: same as email_from)
-    support_email: support@<%= @fqdn %>
+    support_email: <%= @support_email %>
 
     ## User settings
     default_projects_limit: 10
@@ -146,21 +146,21 @@ production: &base
   ## GitLab Shell settings
   gitlab_shell:
     # REPOS_PATH MUST NOT BE A SYMLINK!!!
-    repos_path: <%= @app_home %>/repositories/
-    hooks_path: <%= @app_home %>/gitlab-shell/hooks/
+    repos_path: <%= @shell_repos_path %>
+    hooks_path: <%= @shell_hooks_path %>
 
     # Git over HTTP
     upload_pack: true
     receive_pack: true
 
     # If you use non-standard ssh port you need to specify it
-    ssh_port: <%= @ssh_port %>
+    ssh_port: <%= @shell_ssh_port %>
 
   ## Git settings
   # CAUTION!
   # Use the default values unless you really know what you are doing
   git:
-    bin_path: <%= @git_path %>
+    bin_path: <%= @git_bin %>
     # Max size of a git object (e.g. a commit), in bytes
     # This value can be increased if you have very large commits
     max_size: 5242880 # 5.megabytes

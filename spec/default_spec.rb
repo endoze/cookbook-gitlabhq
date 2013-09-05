@@ -10,11 +10,7 @@ describe 'gitlabhq::default' do
 
   %w{
     gitlabhq::dependencies
-    gitlabhq::gitlab_users
-    gitlabhq::gitlab_shell
-    gitlabhq::database
     gitlabhq::gitlab
-    gitlabhq::nginx
   }.each do |recipe|
     it "should include recipe #{recipe}" do
       expect(@chef_run_with_converge).to include_recipe recipe
