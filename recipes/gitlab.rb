@@ -81,14 +81,13 @@ template "#{node[:gitlab][:app_home]}/config/gitlab.yml" do
     :fqdn              => node[:fqdn],
     :https_boolean     => node[:gitlab][:https],
     :git_user          => node[:gitlab][:user],
-    :git_home          => node[:gitlab][:home],
+    :git_bin           => "#{node[:git][:prefix]}/bin/git",
     :email_from        => node[:gitlab][:email_from],
     :support_email     => node[:gitlab][:support_email],
-    :git_bin           => "#{node[:git][:prefix]}/bin/git",
     :satellite_path    => node[:gitlab][:satellite_path],
     :shell_repos_path  => node[:gitlab][:shell][:repos_path],
     :shell_hooks_path  => node[:gitlab][:shell][:hooks_path],
-    :ssh_port          => node[:gitlab][:shell][:ssh_port],
+    :shell_ssh_port    => node[:gitlab][:shell][:ssh_port],
     :backup_path       => node[:gitlab][:backup][:path],
     :backup_keep_time  => node[:gitlab][:backup][:keep_time]
   )
@@ -172,12 +171,12 @@ end
 
 # Configure git
 execute "git-config-username" do
-  command "sudo -u git -H bash -l -c \"git config --global user.name Gitlab\""
-  creates "#{node[:gitlab][:marker_dir]}/.git_config_username"
+  command "git config --global user.name Gitlab && touch #{node[:gitlab][:marker_dir]}/.git-config-username"
+  creates "#{node[:gitlab][:marker_dir]}/.git-config-username"
 end
 execute "git-config-email" do
-  command "sudo -u git -H bash -l -c \"git config --global user.email gitlab@#{node[:fqdn]}\""
-  creates "#{node[:gitlab][:marker_dir]}/.git_config_email"
+  command "git config --global user.email #{node[:gitlab][:email_from]} && touch #{node[:gitlab][:marker_dir]}/.git-config-email"
+  creates "#{node[:gitlab][:marker_dir]}/.git-config-email"
 end
 
 # Enable and start gitlab service

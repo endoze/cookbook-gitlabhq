@@ -98,7 +98,7 @@ default[:git][:checksum] = "ed6dbf91b56c1540627563b5e8683fe726dac881ae028f3f1765
 default[:openssh][:server][:permit_user_environment] = 'yes'
 
 # RUBY
-case node['platform']
+case node[:platform]
   when 'redhat','centos','scientific','amazon'
     default[:gitlab][:install_ruby] = '1.9.3-p392'
     default[:gitlab][:ruby_dir]     = "/usr/local/ruby/#{node[:gitlab][:install_ruby]}/bin"

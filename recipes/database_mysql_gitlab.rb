@@ -1,3 +1,5 @@
+include_recipe 'gitlabhq::database'
+
 node.set_unless[:gitlab][:database][:password] = secure_password
 ruby_block 'save node data' do
   block do

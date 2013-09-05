@@ -6,15 +6,12 @@ describe 'gitlabhq::dependencies' do
     let (:chef_run_with_converge) { chef_run.converge 'gitlabhq::dependencies' }
 
     %w{
-      ruby_build
       build-essential
       readline
       sudo
       openssh
       xml
       zlib
-      python::package
-      python::pip
       redisio::install
       redisio::enable
     }.each do |recipe|
@@ -39,7 +36,6 @@ describe 'gitlabhq::dependencies' do
       libicu-dev
       libc6-dev
       libyaml-dev
-      nginx
       python
       python-dev
     }.each do |package|
@@ -48,14 +44,13 @@ describe 'gitlabhq::dependencies' do
       end
     end
 
-    %w{ charlock_holmes bundler rake }.each do |gem|
+    %w{
+      bundler
+      rake
+    }.each do |gem|
       it "should install gem #{gem}" do
         expect(chef_run_with_converge).to install_gem_package gem
       end
-    end
-
-    it "should install pygments via python pip" do
-      expect(chef_run_with_converge).to install_python_pip 'pygments'
     end
 
     it "should create a symlink for redis-cli" do

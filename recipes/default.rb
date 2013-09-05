@@ -9,8 +9,6 @@
 
 %w{
   dependencies
-  database
-  webserver
   gitlab
 }.each do |recipe|
   include_recipe "gitlabhq::#{recipe}"

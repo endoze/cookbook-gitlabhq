@@ -1,3 +1,5 @@
+include_recipe "gitlabhq::webserver"
+
 # Render nginx vhost config
 template   '/etc/nginx/sites-available/gitlab_ci' do
   owner    'root'

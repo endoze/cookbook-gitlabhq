@@ -10,6 +10,7 @@ Berksfile.lock
 *.un~
 /cookbooks
 .chef
+/coverage
 
 # Bundler
 Gemfile.lock

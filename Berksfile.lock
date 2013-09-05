@@ -9,12 +9,6 @@
     "sudo": {
       "locked_version": "2.1.4"
     },
-    "yumrepo": {
-      "locked_version": "2.0.0"
-    },
-    "yum": {
-      "locked_version": "2.3.0"
-    },
     "build-essential": {
       "locked_version": "1.4.0"
     },
@@ -22,7 +16,7 @@
       "locked_version": "0.0.3"
     },
     "openssh": {
-      "locked_version": "1.2.0"
+      "locked_version": "1.2.2"
     },
     "iptables": {
       "locked_version": "0.12.0"
@@ -36,6 +30,9 @@
     "python": {
       "locked_version": "1.3.6"
     },
+    "yum": {
+      "locked_version": "2.3.2"
+    },
     "redisio": {
       "locked_version": "1.7.0"
     },
@@ -43,22 +40,22 @@
       "locked_version": "0.8.0"
     },
     "mysql": {
-      "locked_version": "3.0.2"
+      "locked_version": "3.0.0"
     },
     "openssl": {
       "locked_version": "1.0.2"
     },
     "postgresql": {
-      "locked_version": "3.0.2"
+      "locked_version": "3.0.0"
     },
     "apt": {
-      "locked_version": "2.1.0"
+      "locked_version": "1.9.2"
     },
     "database": {
       "locked_version": "1.4.0"
     },
     "aws": {
-      "locked_version": "0.101.2"
+      "locked_version": "0.101.0"
     },
     "xfs": {
       "locked_version": "1.1.0"
@@ -68,6 +65,27 @@
     },
     "hosts_file": {
       "locked_version": "0.1.4"
+    },
+    "nginx": {
+      "locked_version": "1.8.0"
+    },
+    "runit": {
+      "locked_version": "1.2.0"
+    },
+    "ohai": {
+      "locked_version": "1.1.12"
+    },
+    "git": {
+      "locked_version": "2.6.0"
+    },
+    "dmg": {
+      "locked_version": "2.0.0"
+    },
+    "windows": {
+      "locked_version": "1.10.0"
+    },
+    "chef_handler": {
+      "locked_version": "1.1.4"
     }
   }
 }
