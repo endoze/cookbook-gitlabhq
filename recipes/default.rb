@@ -8,18 +8,10 @@
 #
 
 %w{
-  gitlabhq::dependencies
-  gitlabhq::git
-  gitlabhq::gitlab_users
-  gitlabhq::gitlab_shell
-  gitlabhq::database
-  gitlabhq::gitlab
-  gitlabhq::nginx
-  gitlabhq::backup
+  dependencies
+  database
+  webserver
+  gitlab
 }.each do |recipe|
-  include_recipe recipe
-end
-
-if node[:gitlab][:ci][:ci_enabled]
-  include_recipe 'gitlabhq::ci'
+  include_recipe "gitlabhq::#{recipe}"
 end

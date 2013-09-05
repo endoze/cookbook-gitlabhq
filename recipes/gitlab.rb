@@ -1,8 +1,54 @@
+# Setup database
+case node[:gitlab][:database][:type]
+when 'mysql'
+  include_recipe 'gitlabhq::database_mysql_gitlab'
+when 'postgres'
+  include_recipe 'gitlabhq::database_postgres_gitlab'
+end
+
+# Create Gitlab user
+user node[:gitlab][:user] do
+  home     node[:gitlab][:home]
+  shell    node[:gitlab][:user_shell]
+  supports :manage_home => node[:gitlab][:user_manage_home]
+end
+
+# Create directory to store markers in
+directory node[:gitlab][:marker_dir] do
+  owner   node[:gitlab][:user]
+  group   node[:gitlab][:group]
+  mode    0700
+end
+
+# Include cookbook dependencies
+%w{
+  python::package
+  python::pip
+}.each do |recipe|
+  include_recipe recipe
+end
+
+# Required Ruby Gems
+node[:gitlab][:gems].each do |gempkg|
+  gem_package gempkg do
+    action     :install
+  end
+end
+
+# Install pygments from pip
+node[:gitlab][:python_packages].each do |pypkg|
+  python_pip pypkg do
+    action :install
+  end
+end
+
+# Install gitlab shell
+include_recipe 'gitlabhq::gitlab_shell'
 
 # Clone gitlab
 git node[:gitlab][:app_home] do
-  repository  node[:gitlab][:gitlab_url]
-  reference   node[:gitlab][:gitlab_branch]
+  repository  node[:gitlab][:url]
+  reference   node[:gitlab][:branch]
   action      :checkout
   user        node[:gitlab][:user]
   group       node[:gitlab][:group]
@@ -20,43 +66,38 @@ template '/etc/init.d/gitlab' do
   )
 end
 
+# Define gitlab service
 service 'gitlab' do
   supports :status => true, :restart => true, :reload => true
-  action [ :enable, :start ]
-end
-
-local_aliases = [node[:fqdn], node[:gitlab][:server_name]]
-local_aliases << node[:gitlab][:ci][:server_name] if node[:gitlab][:ci][:ci_enabled]
-
-hosts_file_entry '127.0.0.1' do
-  hostname 'localhost'
-  aliases  local_aliases
-  comment  "Set aliases for localhost"
 end
 
 # Render gitlab config file
 template "#{node[:gitlab][:app_home]}/config/gitlab.yml" do
+  source "gitlab.yml.erb"
   owner  node[:gitlab][:user]
   group  node[:gitlab][:group]
   mode   0644
   variables(
-    :fqdn             => node[:fqdn],
-    :https_boolean    => node[:gitlab][:https],
-    :git_user         => node[:gitlab][:git_user],
-    :git_home         => node[:gitlab][:git_home],
-    :satellite_path   => node[:gitlab][:satellite_path],
-    :git_path         => "#{node[:git][:prefix]}/bin/git",
-    :backup_path      => node[:gitlab][:backup_path],
-    :backup_keep_time => node[:gitlab][:backup_keep_time],
-    :app_home         => node[:gitlab][:home],
-    :ssh_port         => node[:gitlab][:ssh_port]
+    :fqdn              => node[:fqdn],
+    :https_boolean     => node[:gitlab][:https],
+    :git_user          => node[:gitlab][:user],
+    :git_home          => node[:gitlab][:home],
+    :email_from        => node[:gitlab][:email_from],
+    :support_email     => node[:gitlab][:support_email],
+    :git_bin           => "#{node[:git][:prefix]}/bin/git",
+    :satellite_path    => node[:gitlab][:satellite_path],
+    :shell_repos_path  => node[:gitlab][:shell][:repos_path],
+    :shell_hooks_path  => node[:gitlab][:shell][:hooks_path],
+    :ssh_port          => node[:gitlab][:shell][:ssh_port],
+    :backup_path       => node[:gitlab][:backup][:path],
+    :backup_keep_time  => node[:gitlab][:backup][:keep_time]
   )
-  notifies :restart, 'service[gitlab]'
+  notifies :restart, 'service[gitlab]', :delayed
 end
 
 # Write the database.yml
 template "#{node[:gitlab][:app_home]}/config/database.yml" do
-  source 'database.yml.erb'
+  source 'gitlab.database.yml.erb'
   owner  node[:gitlab][:user]
   group  node[:gitlab][:group]
   mode   0644
@@ -69,7 +110,7 @@ template "#{node[:gitlab][:app_home]}/config/database.yml" do
     :username => node[:gitlab][:database][:username],
     :password => node[:gitlab][:database][:password]
   )
-  notifies :restart, 'service[gitlab]'
+  notifies :restart, 'service[gitlab]', :delayed
 end
 
 # Create directory for gitlab socket
@@ -89,11 +130,23 @@ directory node[:gitlab][:satellite_path] do
 end
 
 # Create the gitlab Backup folder
-directory node[:gitlab][:backup_path] do
+directory node[:gitlab][:backup][:path] do
   owner  node[:gitlab][:user]
   group  node[:gitlab][:group]
   mode   0755
   action :create
+end
+
+# Render gitlab unicorn config file
+template "#{node[:gitlab][:app_home]}/config/unicorn.rb" do
+  source "gitlab.unicorn.rb.erb"
+  owner  node[:gitlab][:user]
+  group  node[:gitlab][:group]
+  mode   0644
+  variables(
+    :app_home => node[:gitlab][:app_home]
+  )
+  notifies :restart, 'service[gitlab]', :delayed
 end
 
 # Install gems with bundle install
@@ -110,24 +163,30 @@ end
 
 # Setup database for Gitlab
 execute 'gitlab-bundle-rake' do
-  command "echo 'yes' | bundle exec rake gitlab:setup RAILS_ENV=production && touch #{node[:gitlab][:marker_dir]}/.gitlab-setup"
+  command "bundle exec rake gitlab:setup RAILS_ENV=production force=yes && touch #{node[:gitlab][:marker_dir]}/.gitlab-setup"
   cwd     node[:gitlab][:app_home]
   user    node[:gitlab][:user]
   group   node[:gitlab][:group]
   creates "#{node[:gitlab][:marker_dir]}/.gitlab-setup"
 end
 
-# Render puma template
-template  "#{node[:gitlab][:app_home]}/config/puma.rb" do
-  owner   node[:gitlab][:user]
-  group   node[:gitlab][:group]
-  mode    0644
-  variables(
-    :fqdn              => node[:fqdn],
-    :app_name          => 'gitlab',
-    :app_home          => node[:gitlab][:app_home],
-    :environment       => node[:gitlab][:environment],
-    :number_of_workers => node[:gitlab][:puma_workers]
-  )
-  notifies :restart, 'service[gitlab]'
+# Configure git
+execute "git-config-username" do
+  command "sudo -u git -H bash -l -c \"git config --global user.name Gitlab\""
+  creates "#{node[:gitlab][:marker_dir]}/.git_config_username"
+end
+execute "git-config-email" do
+  command "sudo -u git -H bash -l -c \"git config --global user.email gitlab@#{node[:fqdn]}\""
+  creates "#{node[:gitlab][:marker_dir]}/.git_config_email"
+end
+
+# Enable and start gitlab service
+service 'gitlab' do
+  action [ :enable, :start ]
+end
+
+# Make available through webserver
+case node[:gitlab][:webserver][:type]
+  when 'nginx'
+    include_recipe 'gitlabhq::webserver_nginx_gitlab'
 end

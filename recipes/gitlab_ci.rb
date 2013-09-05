@@ -1,3 +1,24 @@
+# Setup database
+case node[:gitlab][:database][:type]
+when 'mysql'
+  include_recipe 'gitlabhq::database_mysql_gitlab_ci'
+when 'postgres'
+  include_recipe 'gitlabhq::database_postgres_gitlab_ci'
+end
+
+# Create Gitlab CI user
+user node[:gitlab][:ci][:user] do
+  home     node[:gitlab][:ci][:home]
+  shell    node[:gitlab][:ci][:user_shell]
+  supports :manage_home => node[:gitlab][:ci][:user_manage_home]
+end
+
+# Create directory to store markers in
+directory node[:gitlab][:ci][:marker_dir] do
+  owner   node[:gitlab][:ci][:user]
+  group   node[:gitlab][:ci][:group]
+  mode    0700
+end
 
 # Clone gitlab-ci
 git node[:gitlab][:ci][:app_home] do
@@ -13,9 +34,8 @@ template '/etc/init.d/gitlab_ci' do
   owner  'root'
   group  'root'
   mode   0755
-  source 'ci.init.erb'
+  source 'gitlab_ci.init.erb'
   variables(
-    :app_name    => 'gitlab-ci',
     :app_home    => node[:gitlab][:ci][:app_home],
     :app_user    => node[:gitlab][:ci][:user]
   )
@@ -31,7 +51,7 @@ template "#{node[:gitlab][:ci][:app_home]}/config/application.yml" do
   owner    node[:gitlab][:ci][:user]
   group    node[:gitlab][:ci][:group]
   mode     0644
-  source   'ci.application.yml'
+  source   'gitlab_ci.application.yml.erb'
   variables(
     :allowed_urls => [node[:gitlab][:ci][:allowed_urls]]
   )
@@ -40,7 +60,7 @@ end
 
 # Write the database.yml
 template "#{node[:gitlab][:ci][:app_home]}/config/database.yml" do
-  source 'database.yml.erb'
+  source 'gitlab.database.yml.erb'
   owner  node[:gitlab][:ci][:user]
   group  node[:gitlab][:ci][:group]
   mode   0644
@@ -53,7 +73,7 @@ template "#{node[:gitlab][:ci][:app_home]}/config/database.yml" do
     :username => node[:gitlab][:ci][:database][:username],
     :password => node[:gitlab][:ci][:database][:password]
   )
-  notifies :restart, 'service[gitlab_ci]'
+  notifies :restart, 'service[gitlab_ci]', :delayed
 end
 
 # Create directory for gitlab ci socket
@@ -88,14 +108,16 @@ end
 
 # Setup database for Gitlab Ci
 execute 'gitlab-ci-bundle-rake' do
-  command "bundle exec rake db:setup RAILS_ENV=production"
+  command "bundle exec rake db:setup RAILS_ENV=production && touch #{node[:gitlab][:ci][:marker_dir]}/.gitlab-ci-setup"
   cwd     node[:gitlab][:ci][:app_home]
   user    node[:gitlab][:ci][:user]
   group   node[:gitlab][:ci][:group]
+  creates "#{node[:gitlab][:ci][:marker_dir]}/.gitlab-ci-setup"
 end
 
 # Render puma template
 template  "#{node[:gitlab][:ci][:app_home]}/config/puma.rb" do
+  source "gitlab_ci.puma.rb.erb"
   owner   node[:gitlab][:ci][:user]
   group   node[:gitlab][:ci][:group]
   mode    0644
@@ -103,7 +125,13 @@ template  "#{node[:gitlab][:ci][:app_home]}/config/puma.rb" do
     :fqdn        => node[:fqdn],
     :app_name    => 'gitlab-ci',
     :app_home    => node[:gitlab][:ci][:app_home],
-    :environment => node[:gitlab][:ci][:environment]
+    :environment => node[:gitlab][:ci][:puma_environment]
   )
   notifies :restart, 'service[gitlab_ci]'
+end
+
+# Make available through webserver
+case node[:gitlab][:webserver][:type]
+  when 'nginx'
+    include_recipe 'gitlabhq::webserver_nginx_gitlab_ci'
 end
