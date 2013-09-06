@@ -1,9 +1,9 @@
-# VERSIONS
+# VERSIONS (only change if you know what you are doing!)
 default[:gitlab][:branch]         = 'v6.0.1'
 default[:gitlab][:shell][:branch] = 'v1.7.1'
 default[:gitlab][:ci][:branch]    = 'v3.1.0'
 
-# URLS
+# SERVER NAMES 
 default[:gitlab][:server_name]      = 'gitlab.local'
 default[:gitlab][:ci][:server_name] = 'gitlab_ci.local'
 
