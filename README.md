@@ -140,7 +140,7 @@ default[:gitlab][:backup][:remote][:aws][:s3_keep]   = 10
 #### Configure Hosts File Handling
 
 Using the `hostsfile` cookbook we automatically add aliases for `127.0.0.1` to your nodes hosts file. You can configure the entry with the attributes
-```rub
+```ruby
 # GITLAB
 default[:gitlab][:hostsfile_entry] = node[:gitlab][:server_name]
 
