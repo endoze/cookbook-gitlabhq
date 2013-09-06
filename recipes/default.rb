@@ -8,3 +8,4 @@
 #
 
 include_recipe 'gitlabhq::gitlab'
+include_recipe 'gitlabhq::gitlab_ci'
