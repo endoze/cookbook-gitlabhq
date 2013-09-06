@@ -181,7 +181,7 @@ default[:git][:checksum] = "ed6dbf91b56c1540627563b5e8683fe726dac881ae028f3f1765
 
 Based on the platform of your node we install ruby through package or with the `ruby_build` cookbook
 
-You can force to install ruby with `ruby_build` by overwriting the attribute
+You can force to install ruby with `ruby_build` by overriding the attribute
 ```ruby
 default[:gitlab][:install_ruby] = '1.9.3-p392'
 ```
@@ -199,6 +199,8 @@ License and Authors
 -------------------
 Authors:
 - chris@wideeyelabs.com
+
+Credits:
 - Gerald L. Hevener Jr. (2012)
 - Eric G. Wolfe (2012)
   
