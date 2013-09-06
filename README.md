@@ -7,16 +7,14 @@ This cookbook installs and configures GitLab and GitLab Ci.
 
 Installation and Configuration
 -----
-#### Install and Configure GitLab & GitLab Shell
+#### GitLab & GitLab Shell
 
-To install GitLab and GitLab Shell add the `gitlab` recipe to your nodes run_list
-
+Add the `gitlab` recipe to your nodes run_list
 ```ruby
-recipe[gitlab::gitlab]
+"recipe[gitlab::gitlab]"
 ```
 
 Available attributes to configure are
-
 ```ruby
 # GITLAB
 default[:gitlab][:https]            = true
@@ -56,16 +54,14 @@ default[:gitlab][:database][:database] = 'gitlab'
 default[:gitlab][:database][:username] = 'gitlab'
 ```
 
-#### Install and Configure GitLab Ci
+#### GitLab Ci
 
-To install GitLab CI add the `gitlab_ci` recipe to your nodes run_list
-
+Add the `gitlab_ci` recipe to your nodes run_list
 ```ruby
-recipe[gitlab::gitlab_ci]
+"recipe[gitlab::gitlab_ci]"
 ```
 
 Available attributes to configure are 
-
 ```ruby
 # GITLAB CI
 default[:gitlab][:ci][:user]             = node[:gitlab][:user]
@@ -89,12 +85,11 @@ default[:gitlab][:ci][:database][:database] = 'gitlab_ci'
 default[:gitlab][:ci][:database][:username] = 'gitlab_ci'
 ```
 
-#### Install Both
+#### Both
 
-If you want to install both you can just add the default recipe, which includes the gitlab and gitlab_ci recipe
-
+If you want to install both you can just add the default recipe, which includes the `gitlab` and `gitlab_ci` recipe
 ```ruby
-  recipe[gitlab]
+"recipe[gitlab]"
 ```
 
 
@@ -115,16 +110,14 @@ default[:gitlab][:webserver][:ssl_req]             = "/C=US/ST=Several/L=Localit
 
 #### Configure Backup
 
-To activate backup with AWS add the `backup` recipe to your nodes run_list
+To activate backup with AWS add the `backup` recipe to your nodes run_list  
 Note: This has to be added AFTER the default, gitlab or gitlab_ci recipes
-
 ```ruby
-recipe[gitlab]
-recipe[gitlab::backup]
+"recipe[gitlab]",
+"recipe[gitlab::backup]"
 ```
 
 Available attributes to configure are 
-
 ```ruby
 default[:gitlab][:backup][:path]      = "#{node[:gitlab][:app_home]}/backups"
 default[:gitlab][:backup][:keep_time] = 604800
@@ -136,15 +129,14 @@ default[:gitlab][:backup][:s3_keep]   = 10
 
 #### Configure Hostnames
 
-To activate setting of hostname aliases to the hosts-file add the `hosts` recipe to your nodes run_list
+To activate handline of hostname aliases to the hosts-file add the `hosts` recipe to your nodes run_list  
 Note: This has to be added AFTER the default, gitlab or gitlab_ci recipes
-
 ```ruby
-recipe[gitlab]
-recipe[gitlab::hosts]
+"recipe[gitlab]",
+"recipe[gitlab::hosts]"
 ```
 
-Available attributes to configure are
+Available attributes to configure are  
 Note: Changing these might also affects the webserver configuration
 ```ruby
 # SERVER NAMES 
@@ -152,9 +144,11 @@ default[:gitlab][:server_name]      = 'gitlab.local'
 default[:gitlab][:ci][:server_name] = 'gitlab_ci.local'
 ```
 
+
+
 Contributing
 ------------
-1. Fork the repository on Github
+1. Fork the repository on Github  
 2. Create a named feature branch (like `my_cool_feature`)
 3. Write you change
 4. Write tests for your change (if applicable)
@@ -164,8 +158,8 @@ Contributing
 License and Authors
 -------------------
 Authors:
-  chris@wideeyelabs.com
-  Gerald L. Hevener Jr. (2012)
-  Eric G. Wolfe (2012)
-
+- chris@wideeyelabs.com
+- Gerald L. Hevener Jr. (2012)
+- Eric G. Wolfe (2012)
+  
 License: MIT
