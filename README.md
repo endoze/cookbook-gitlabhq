@@ -126,15 +126,15 @@ default[:gitlab][:backup][:remote][:handler] = []
 Add `aws` to the backup remote handler attribute
 
 ```ruby
-default[:gitlab][:backup][:remote][:handler] = ['aws']
+default[:gitlab][:backup][:remote][:handler] = ['aws_s3']
 ```
 
 Available attributes to configure are 
 ```ruby
-default[:gitlab][:backup][:remote][:aws][:s3_region] = 'us-east-1'
-default[:gitlab][:backup][:remote][:aws][:s3_bucket] = 'gitlab-repo-backups'
-default[:gitlab][:backup][:remote][:aws][:s3_path]   = '/backups'
-default[:gitlab][:backup][:remote][:aws][:s3_keep]   = 10
+default[:gitlab][:backup][:remote][:aws_s3][:region] = 'us-east-1'
+default[:gitlab][:backup][:remote][:aws_s3][:bucket] = 'gitlab-repo-backups'
+default[:gitlab][:backup][:remote][:aws_s3][:path]   = '/backups'
+default[:gitlab][:backup][:remote][:aws_s3][:keep]   = 10
 ```
 
 #### Configure Hosts File Handling

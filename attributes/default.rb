@@ -43,15 +43,15 @@ default[:gitlab][:database][:database] = 'gitlab'
 default[:gitlab][:database][:username] = 'gitlab'
 
 # GITLAB BACKUP
-default[:gitlab][:backup][:path]      = "#{node[:gitlab][:app_home]}/backups"
-default[:gitlab][:backup][:keep_time] = 604800
-default[:gitlab][:backup][:remote][:handler]   = ['aws']
+default[:gitlab][:backup][:path]             = "#{node[:gitlab][:app_home]}/backups"
+default[:gitlab][:backup][:keep_time]        = 604800
+default[:gitlab][:backup][:remote][:handler] = []
 
 # GITLAB BACKUP AWS HANDLER
-default[:gitlab][:backup][:remote][:aws][:s3_region] = 'us-east-1'
-default[:gitlab][:backup][:remote][:aws][:s3_bucket] = 'gitlab-repo-backups'
-default[:gitlab][:backup][:remote][:aws][:s3_path]   = '/backups'
-default[:gitlab][:backup][:remote][:aws][:s3_keep]   = 10
+default[:gitlab][:backup][:remote][:aws_s3][:region] = 'us-east-1'
+default[:gitlab][:backup][:remote][:aws_s3][:bucket] = 'gitlab-repo-backups'
+default[:gitlab][:backup][:remote][:aws_s3][:path]   = '/backups'
+default[:gitlab][:backup][:remote][:aws_s3][:keep]   = 10
 
 # GITLAB CI
 default[:gitlab][:ci][:server_name]      = 'gitlab_ci.local'

@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe 'gitlabhq::backup_aws' do
+describe 'gitlabhq::backup_aws_s3' do
   let(:chef_run)               { ChefSpec::ChefRunner.new(CHEF_RUN_OPTIONS) }
-  let(:chef_run_with_converge) { chef_run.converge 'gitlabhq::backup_aws' }
+  let(:chef_run_with_converge) { chef_run.converge 'gitlabhq::backup_aws_s3' }
 
   it 'should include the backup recipe' do
     expect(chef_run_with_converge).to include_recipe 'backup'
