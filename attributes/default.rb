@@ -3,11 +3,9 @@ default[:gitlab][:branch]         = 'v6.0.1'
 default[:gitlab][:shell][:branch] = 'v1.7.1'
 default[:gitlab][:ci][:branch]    = 'v3.1.0'
 
-# SERVER NAMES 
-default[:gitlab][:server_name]      = 'gitlab.local'
-default[:gitlab][:ci][:server_name] = 'gitlab_ci.local'
-
 # GITLAB
+default[:gitlab][:server_name]      = 'gitlab.local'
+default[:gitlab][:hostsfile_entry]  = node[:gitlab][:server_name]
 default[:gitlab][:https]            = true
 default[:gitlab][:user]             = 'git'
 default[:gitlab][:user_shell]       = '/bin/bash'
@@ -47,15 +45,17 @@ default[:gitlab][:database][:username] = 'gitlab'
 # GITLAB BACKUP
 default[:gitlab][:backup][:path]      = "#{node[:gitlab][:app_home]}/backups"
 default[:gitlab][:backup][:keep_time] = 604800
-default[:gitlab][:backup][:handler]   = ['aws']
+default[:gitlab][:backup][:remote][:handler]   = ['aws']
 
 # GITLAB BACKUP AWS HANDLER
-default[:gitlab][:backup][:aws][:s3_region] = 'us-east-1'
-default[:gitlab][:backup][:aws][:s3_bucket] = 'gitlab-repo-backups'
-default[:gitlab][:backup][:aws][:s3_path]   = '/backups'
-default[:gitlab][:backup][:aws][:s3_keep]   = 10
+default[:gitlab][:backup][:remote][:aws][:s3_region] = 'us-east-1'
+default[:gitlab][:backup][:remote][:aws][:s3_bucket] = 'gitlab-repo-backups'
+default[:gitlab][:backup][:remote][:aws][:s3_path]   = '/backups'
+default[:gitlab][:backup][:remote][:aws][:s3_keep]   = 10
 
 # GITLAB CI
+default[:gitlab][:ci][:server_name]      = 'gitlab_ci.local'
+default[:gitlab][:ci][:hostsfile_entry]  = node[:gitlab][:ci][:server_name]
 default[:gitlab][:ci][:user]             = node[:gitlab][:user]
 default[:gitlab][:ci][:user_shell]       = node[:gitlab][:user_shell]
 default[:gitlab][:ci][:user_manage_home] = node[:gitlab][:user_manage_home]
