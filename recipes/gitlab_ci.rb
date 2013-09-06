@@ -132,6 +132,13 @@ template  "#{node[:gitlab][:ci][:app_home]}/config/puma.rb" do
   notifies :restart, 'service[gitlab_ci]'
 end
 
+# Hostsfile
+hostsfile_entry '127.0.0.1' do
+  hostname  node[:gitlab][:ci][:hostsfile_entry]
+  action    :append
+  only_if   node[:gitlab][:ci][:hostsfile_entry]
+end
+
 # Make available through webserver
 case node[:gitlab][:webserver][:type]
   when 'nginx'

@@ -63,8 +63,8 @@
     "backup": {
       "locked_version": "0.0.4"
     },
-    "hosts_file": {
-      "locked_version": "0.1.4"
+    "hostsfile": {
+      "locked_version": "2.0.0"
     },
     "nginx": {
       "locked_version": "1.8.0"

@@ -189,6 +189,13 @@ end
 # Backup
 include_recipe 'gitlabhq::backup'
 
+# Hostsfile
+hostsfile_entry '127.0.0.1' do
+  hostname  node[:gitlab][:hostsfile_entry]
+  action    :append
+  only_if   node[:gitlab][:hostsfile_entry]
+end
+
 # Make available through webserver
 case node[:gitlab][:webserver][:type]
   when 'nginx'

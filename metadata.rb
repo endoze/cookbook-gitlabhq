@@ -19,7 +19,7 @@ depends 'mysql'
 depends 'postgresql'
 depends 'database'
 depends 'backup'
-depends 'hosts_file'
+depends 'hostsfile'
 depends 'nginx'
 depends 'git'
 
