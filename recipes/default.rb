@@ -7,9 +7,4 @@
 # MIT License
 #
 
-%w{
-  dependencies
-  gitlab
-}.each do |recipe|
-  include_recipe "gitlabhq::#{recipe}"
-end
+include_recipe 'gitlabhq::gitlab'

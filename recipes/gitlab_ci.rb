@@ -1,3 +1,5 @@
+include_recipe 'dependencies'
+
 # Setup database
 case node[:gitlab][:database][:type]
 when 'mysql'
