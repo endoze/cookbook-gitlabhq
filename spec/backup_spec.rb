@@ -1,8 +1,9 @@
 require 'spec_helper'
 
-describe 'gitlabhq::backup', focus: true do
+describe 'gitlabhq::backup' do
   let(:chef_run)               { ChefSpec::ChefRunner.new(CHEF_RUN_OPTIONS) }
   let(:chef_run_with_converge) { chef_run.converge 'gitlabhq::backup' }
+
   context 'when backups are enabled' do
     it 'should include the backup recipe' do
       chef_run.node.set[:gitlab][:backup][:backups_enabled] = true
