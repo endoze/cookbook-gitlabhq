@@ -186,6 +186,9 @@ service 'gitlab' do
   action [ :enable, :start ]
 end
 
+# Backup
+include_recipe 'gitlabhq::backup'
+
 # Make available through webserver
 case node[:gitlab][:webserver][:type]
   when 'nginx'

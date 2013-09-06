@@ -115,23 +115,29 @@ default[:gitlab][:webserver][:ssl_req]             = "/C=US/ST=Several/L=Localit
 
 #### Configure Backup
 
-To activate backup with AWS add the `backup` recipe to your nodes run_list
-Note: This has to be added AFTER the default, gitlab or gitlab_ci recipes
-
-```ruby
-recipe[gitlab]
-recipe[gitlab::backup]
-```
-
 Available attributes to configure are 
 
 ```ruby
 default[:gitlab][:backup][:path]      = "#{node[:gitlab][:app_home]}/backups"
 default[:gitlab][:backup][:keep_time] = 604800
-default[:gitlab][:backup][:s3_region] = 'us-east-1'
-default[:gitlab][:backup][:s3_bucket] = 'gitlab-repo-backups'
-default[:gitlab][:backup][:s3_path]   = '/backups'
-default[:gitlab][:backup][:s3_keep]   = 10
+default[:gitlab][:backup][:handler]   = []
+```
+
+#### Configure Backup to AWS
+
+Add `aws` to the backup handler attribute
+
+```ruby
+default[:gitlab][:backup][:handler] = ['aws']
+```
+
+Available attributes to configure are 
+
+```ruby
+default[:gitlab][:backup][:aws][:s3_region] = 'us-east-1'
+default[:gitlab][:backup][:aws][:s3_bucket] = 'gitlab-repo-backups'
+default[:gitlab][:backup][:aws][:s3_path]   = '/backups'
+default[:gitlab][:backup][:aws][:s3_keep]   = 10
 ```
 
 #### Configure Hostnames
