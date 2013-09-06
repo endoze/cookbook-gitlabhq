@@ -91,7 +91,7 @@ default[:gitlab][:ci][:database][:username] = 'gitlab_ci'
 
 #### Both
 
-If you want to install both you can just add the default recipe, which includes the `gitlab` and `gitlab_ci` recipe
+If you want to install both you can just add the default recipe, which includes `gitlab` and `gitlab_ci`
 ```ruby
 "recipe[gitlab]"
 ```
@@ -108,7 +108,7 @@ default[:gitlab][:webserver][:ssl_req]             = "/C=US/ST=Several/L=Localit
 
 If you want to deactivate the installation and configuration of a webserver just set the type to `false`
 ```ruby
-default[:gitlab][:webserver][:type] = 'nginx'
+default[:gitlab][:webserver][:type] = false
 ```
 
 #### Configure Backup
