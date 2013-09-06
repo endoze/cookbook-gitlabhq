@@ -17,6 +17,8 @@ Add the `gitlab` recipe to your nodes run_list
 Available attributes to configure are
 ```ruby
 # GITLAB
+default[:gitlab][:server_name]      = 'gitlab.local'
+default[:gitlab][:hostsfile_entry]  = node[:gitlab][:server_name]
 default[:gitlab][:https]            = true
 default[:gitlab][:user]             = 'git'
 default[:gitlab][:user_shell]       = '/bin/bash'
@@ -64,6 +66,8 @@ Add the `gitlab_ci` recipe to your nodes run_list
 Available attributes to configure are 
 ```ruby
 # GITLAB CI
+default[:gitlab][:ci][:server_name]      = 'gitlab_ci.local'
+default[:gitlab][:ci][:hostsfile_entry]  = node[:gitlab][:ci][:server_name]
 default[:gitlab][:ci][:user]             = node[:gitlab][:user]
 default[:gitlab][:ci][:user_shell]       = node[:gitlab][:user_shell]
 default[:gitlab][:ci][:user_manage_home] = node[:gitlab][:user_manage_home]
@@ -92,15 +96,9 @@ If you want to install both you can just add the default recipe, which includes 
 "recipe[gitlab]"
 ```
 
-
 #### Configure Webserver
 
-Note: Changing the server names might also affect the Hostname Handling
 ```ruby
-# SERVER NAMES 
-default[:gitlab][:server_name]      = 'gitlab.local'
-default[:gitlab][:ci][:server_name] = 'gitlab_ci.local'
-
 # WEBSERVER
 default[:gitlab][:webserver][:type]                = 'nginx'
 default[:gitlab][:webserver][:ssl_certificate]     = "/etc/#{node[:gitlab][:webserver][:type]}/#{node[:fqdn]}.crt"
@@ -108,50 +106,82 @@ default[:gitlab][:webserver][:ssl_certificate_key] = "/etc/#{node[:gitlab][:webs
 default[:gitlab][:webserver][:ssl_req]             = "/C=US/ST=Several/L=Locality/O=Example/OU=Operations/CN=#{node[:fqdn]}/emailAddress=root@localhost"
 ```
 
+If you want to deactivate the installation and configuration of a webserver just set the type to `false`
+```ruby
+default[:gitlab][:webserver][:type] = 'nginx'
+```
+
 #### Configure Backup
 
 Available attributes to configure are 
 
 ```ruby
-default[:gitlab][:backup][:path]      = "#{node[:gitlab][:app_home]}/backups"
-default[:gitlab][:backup][:keep_time] = 604800
-default[:gitlab][:backup][:handler]   = []
+default[:gitlab][:backup][:path]             = "#{node[:gitlab][:app_home]}/backups"
+default[:gitlab][:backup][:keep_time]        = 604800
+default[:gitlab][:backup][:remote][:handler] = []
 ```
 
-#### Configure Backup to AWS S3
+#### Configure Remote Backup to AWS S3
 
-Add `aws` to the backup handler attribute
+Add `aws` to the backup remote handler attribute
 
 ```ruby
-default[:gitlab][:backup][:handler] = ['aws']
+default[:gitlab][:backup][:remote][:handler] = ['aws']
 ```
 
 Available attributes to configure are 
 ```ruby
-default[:gitlab][:backup][:aws][:s3_region] = 'us-east-1'
-default[:gitlab][:backup][:aws][:s3_bucket] = 'gitlab-repo-backups'
-default[:gitlab][:backup][:aws][:s3_path]   = '/backups'
-default[:gitlab][:backup][:aws][:s3_keep]   = 10
+default[:gitlab][:backup][:remote][:aws][:s3_region] = 'us-east-1'
+default[:gitlab][:backup][:remote][:aws][:s3_bucket] = 'gitlab-repo-backups'
+default[:gitlab][:backup][:remote][:aws][:s3_path]   = '/backups'
+default[:gitlab][:backup][:remote][:aws][:s3_keep]   = 10
 ```
 
-#### Configure Hostnames
+#### Configure Hosts File Handling
 
-To activate handling of hostname aliases to the hosts-file add the `hosts` recipe to your nodes run_list  
-Note: This has to be added AFTER the default, gitlab or gitlab_ci recipes
+Using the `hostsfile` cookbook we automatically add aliases for `127.0.0.1` to your nodes hosts file. You can configure the entry with the attributes
+```rub
+# GITLAB
+default[:gitlab][:hostsfile_entry] = node[:gitlab][:server_name]
+
+# GITLAB CI
+default[:gitlab][:ci][:hostsfile_entry] = node[:gitlab][:ci][:server_name]
+```
+
+If you want to deactivate this behaviour just set the attribute to `false`
 ```ruby
-"recipe[gitlab]",
-"recipe[gitlab::hosts]"
+# GITLAB
+default[:gitlab][:hostsfile_entry] = false 
+
+# GITLAB CI
+default[:gitlab][:ci][:hostsfile_entry] = false 
 ```
 
-Available attributes to configure are  
-Note: Changing these might also affects the webserver configuration
+#### Configure Git
+
+We use the `git::default` recipe to handle git installation per default. You can change this to `git::source` by setting the attribute
 ```ruby
-# SERVER NAMES 
-default[:gitlab][:server_name]      = 'gitlab.local'
-default[:gitlab][:ci][:server_name] = 'gitlab_ci.local'
+# GIT
+default[:gitlab][:git][:include_recipe] = "source"
 ```
 
+If you use the source recipe the following attributes are set from us
+```ruby
+# GIT::SOURCE
+default[:git][:prefix] = "/usr/local"
+default[:git][:version] = "1.8.4"
+default[:git][:url] = "https://git-core.googlecode.com/files/git-#{node[:git][:version]}.tar.gz"
+default[:git][:checksum] = "ed6dbf91b56c1540627563b5e8683fe726dac881ae028f3f17650b88fcb641d7"
+```
 
+#### Configure Ruby
+
+Based on the platform of your node we install ruby through package or with the `ruby_build` cookbook
+
+You can force to install ruby with `ruby_build` by overwriting the attribute
+```ruby
+default[:gitlab][:install_ruby] = '1.9.3-p392'
+```
 
 Contributing
 ------------
