@@ -118,7 +118,7 @@ default[:gitlab][:backup][:keep_time] = 604800
 default[:gitlab][:backup][:handler]   = []
 ```
 
-#### Configure Backup to AWS
+#### Configure Backup to AWS S3
 
 Add `aws` to the backup handler attribute
 
@@ -136,7 +136,7 @@ default[:gitlab][:backup][:aws][:s3_keep]   = 10
 
 #### Configure Hostnames
 
-To activate handline of hostname aliases to the hosts-file add the `hosts` recipe to your nodes run_list  
+To activate handling of hostname aliases to the hosts-file add the `hosts` recipe to your nodes run_list  
 Note: This has to be added AFTER the default, gitlab or gitlab_ci recipes
 ```ruby
 "recipe[gitlab]",
