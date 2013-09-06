@@ -1,4 +1,4 @@
-include_recipe 'dependencies'
+include_recipe 'gitlabhq::dependencies'
 
 # Setup database
 case node[:gitlab][:database][:type]
