@@ -68,6 +68,11 @@ template '/etc/init.d/gitlab' do
   )
 end
 
+# Start gitlab on boot
+execute 'gitlab-on-boot' do
+  command "update-rc.d gitlab defaults 21"
+end
+
 # Register  service
 service 'gitlab' do
   supports :status => true, :restart => true, :reload => true
