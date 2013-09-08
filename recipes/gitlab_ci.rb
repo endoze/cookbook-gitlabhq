@@ -43,9 +43,9 @@ template '/etc/init.d/gitlab_ci' do
   )
 end
 
+# Register Service
 service 'gitlab_ci' do
   supports :status => true, :restart => true, :reload => true
-  action [ :enable, :start ]
 end
 
 # Render gitlab ci config file
@@ -57,7 +57,7 @@ template "#{node[:gitlab][:ci][:app_home]}/config/application.yml" do
   variables(
     :allowed_urls => [node[:gitlab][:ci][:allowed_urls]]
   )
-  notifies :restart, 'service[gitlab_ci]'
+  notifies :restart, 'service[gitlab_ci]', :delayed
 end
 
 # Write the database.yml
@@ -129,14 +129,20 @@ template  "#{node[:gitlab][:ci][:app_home]}/config/puma.rb" do
     :app_home    => node[:gitlab][:ci][:app_home],
     :environment => node[:gitlab][:ci][:puma_environment]
   )
-  notifies :restart, 'service[gitlab_ci]'
+  notifies :restart, 'service[gitlab_ci]', :delayed
 end
 
 # Hostsfile
 hostsfile_entry '127.0.0.1' do
   hostname  node[:gitlab][:ci][:hostsfile_entry]
   action    :append
-  only_if   node[:gitlab][:ci][:hostsfile_entry]
+  only_if   { node[:gitlab][:ci][:hostsfile_entry] }
+end
+
+# Enable and start service
+service 'gitlab_ci' do
+  action [ :enable, :start ]
+  retries 2
 end
 
 # Make available through webserver

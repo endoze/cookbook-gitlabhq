@@ -68,7 +68,7 @@ template '/etc/init.d/gitlab' do
   )
 end
 
-# Define gitlab service
+# Register  service
 service 'gitlab' do
   supports :status => true, :restart => true, :reload => true
 end
@@ -174,16 +174,25 @@ end
 # Configure git
 execute "git-config-username" do
   command "git config --global user.name Gitlab && touch #{node[:gitlab][:marker_dir]}/.git-config-username"
+  cwd     node[:gitlab][:home]
+  user    node[:gitlab][:user]
+  group   node[:gitlab][:group]
+  environment ({"HOME" => node[:gitlab][:home]})
   creates "#{node[:gitlab][:marker_dir]}/.git-config-username"
 end
 execute "git-config-email" do
   command "git config --global user.email #{node[:gitlab][:email_from]} && touch #{node[:gitlab][:marker_dir]}/.git-config-email"
+  cwd     node[:gitlab][:home]
+  user    node[:gitlab][:user]
+  group   node[:gitlab][:group]
+  environment ({"HOME" => node[:gitlab][:home]})
   creates "#{node[:gitlab][:marker_dir]}/.git-config-email"
 end
 
 # Enable and start gitlab service
 service 'gitlab' do
   action [ :enable, :start ]
+  retries 2
 end
 
 # Backup
@@ -193,7 +202,7 @@ include_recipe 'gitlabhq::backup'
 hostsfile_entry '127.0.0.1' do
   hostname  node[:gitlab][:hostsfile_entry]
   action    :append
-  only_if   node[:gitlab][:hostsfile_entry]
+  only_if   { node[:gitlab][:hostsfile_entry] }
 end
 
 # Make available through webserver
