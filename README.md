@@ -22,6 +22,10 @@ To just install GitLab CI add the `gitlab_ci` recipe to your nodes run_list
 "recipe[gitlab::gitlab_ci]"
 ```
 
+To install a GitLab Ci Runner add the `gitlab_ci_runner` to your nodes run_list
+```ruby
+"recipe[gitlab::gitlab_ci_runner]"
+```
 
 Configuration
 -----
