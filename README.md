@@ -5,14 +5,27 @@ This cookbook installs and configures GitLab and GitLab Ci.
 [![Build Status](https://secure.travis-ci.org/WideEyeLabs/cookbook-gitlabhq.png?branch=master)](http://travis-ci.org/WideEyeLabs/cookbook-gitlabhq?branch=master)
 
 
-Installation and Configuration
+Usage
 -----
-#### GitLab & GitLab Shell
+To install GitLab, GitLab Shell and GitLab CI just add the default recipe to your nodes run_list
+```ruby
+"recipe[gitlab]"
+```
 
-Add the `gitlab` recipe to your nodes run_list
+To just install GitLab and GitLab Shell add the `gitlab` recipe to your nodes run_list
 ```ruby
 "recipe[gitlab::gitlab]"
 ```
+
+To just install GitLab CI add the `gitlab_ci` recipe to your nodes run_list
+```ruby
+"recipe[gitlab::gitlab_ci]"
+```
+
+
+Configuration
+-----
+#### GitLab & GitLab Shell
 
 Available attributes to configure are
 ```ruby
@@ -58,11 +71,6 @@ default[:gitlab][:database][:username] = 'gitlab'
 
 #### GitLab Ci
 
-Add the `gitlab_ci` recipe to your nodes run_list
-```ruby
-"recipe[gitlab::gitlab_ci]"
-```
-
 Available attributes to configure are 
 ```ruby
 # GITLAB CI
@@ -89,15 +97,10 @@ default[:gitlab][:ci][:database][:database] = 'gitlab_ci'
 default[:gitlab][:ci][:database][:username] = 'gitlab_ci'
 ```
 
-#### Both
 
-If you want to install both you can just add the default recipe, which includes `gitlab` and `gitlab_ci`
-```ruby
-"recipe[gitlab]"
-```
+#### Webserver
 
-#### Configure Webserver
-
+Available attributes to configure are 
 ```ruby
 # WEBSERVER
 default[:gitlab][:webserver][:type]                = 'nginx'
@@ -111,7 +114,7 @@ If you want to deactivate the installation and configuration of a webserver just
 default[:gitlab][:webserver][:type] = false
 ```
 
-#### Configure Backup
+#### Backup
 
 Available attributes to configure are 
 
@@ -121,9 +124,9 @@ default[:gitlab][:backup][:keep_time]        = 604800
 default[:gitlab][:backup][:remote][:handler] = []
 ```
 
-#### Configure Remote Backup to AWS S3
+#### Remote Backup to AWS S3
 
-Add `aws` to the backup remote handler attribute
+Add `aws_s3` to the backup remote handler attribute
 
 ```ruby
 default[:gitlab][:backup][:remote][:handler] = ['aws_s3']
@@ -137,7 +140,7 @@ default[:gitlab][:backup][:remote][:aws_s3][:path]   = '/backups'
 default[:gitlab][:backup][:remote][:aws_s3][:keep]   = 10
 ```
 
-#### Configure Hosts File Handling
+#### Hosts File Handling
 
 Using the `hostsfile` cookbook we automatically add aliases for `127.0.0.1` to your nodes hosts file. You can configure the entry with the attributes
 ```ruby
@@ -157,7 +160,7 @@ default[:gitlab][:hostsfile_entry] = false
 default[:gitlab][:ci][:hostsfile_entry] = false 
 ```
 
-#### Configure Git
+#### Git
 
 We use the `git::default` recipe to handle git installation per default. You can change this to `git::source` by setting the attribute
 ```ruby
@@ -174,11 +177,11 @@ default[:git][:url] = "https://git-core.googlecode.com/files/git-#{node[:git][:v
 default[:git][:checksum] = "ed6dbf91b56c1540627563b5e8683fe726dac881ae028f3f17650b88fcb641d7"
 ```
 
-#### Configure Ruby
+#### Ruby
 
 Based on the platform of your node we install ruby through package or with the `ruby_build` cookbook
 
-You can force to install ruby with `ruby_build` by overwriting the attribute
+You can force to install ruby with `ruby_build` by overriding the attribute
 ```ruby
 default[:gitlab][:install_ruby] = '1.9.3-p392'
 ```
@@ -196,6 +199,8 @@ License and Authors
 -------------------
 Authors:
 - chris@wideeyelabs.com
+
+Credits:
 - Gerald L. Hevener Jr. (2012)
 - Eric G. Wolfe (2012)
   
