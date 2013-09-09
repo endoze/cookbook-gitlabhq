@@ -160,7 +160,9 @@ production: &base
   # CAUTION!
   # Use the default values unless you really know what you are doing
   git:
+    <% if node[:gitlab][:git][:include_recipe] == "source" %> 
     bin_path: <%= @git_bin %>
+    <% end %>
     # Max size of a git object (e.g. a commit), in bytes
     # This value can be increased if you have very large commits
     max_size: 5242880 # 5.megabytes

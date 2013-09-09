@@ -15,6 +15,8 @@ template "#{node[:gitlab][:shell][:app_home]}/config.yml" do
   mode   0644
   variables(
     :git_user         => node[:gitlab][:user],
+    :server_name      => node[:gitlab][:server_name],
+    :https_boolean    => node[:gitlab][:https],
     :repos_path       => node[:gitlab][:shell][:repos_path],
     :auth_file        => node[:gitlab][:shell][:auth_file],
     :redis_binary     => node[:gitlab][:shell][:redis_binary_path],

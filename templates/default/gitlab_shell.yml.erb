@@ -5,12 +5,12 @@
 user: <%= @git_user %>
 
 # Url to gitlab instance. Used for api calls. Should be ends with slash.
-gitlab_url: "http://127.0.0.1/"
+gitlab_url: "<%= @https_boolean ? "https" : "http" %>://<%= @server_name %>"
 
 http_settings:
 #  user: someone
 #  password: somepass
-  self_signed_cert: false
+  self_signed_cert: <%= @https_boolean ? true : false %>
 
 # Repositories path
 # REPOS_PATH MUST NOT BE A SYMLINK!!!
