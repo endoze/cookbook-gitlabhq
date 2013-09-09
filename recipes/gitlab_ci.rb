@@ -129,7 +129,7 @@ template  "#{node[:gitlab][:ci][:app_home]}/config/puma.rb" do
   group   node[:gitlab][:ci][:group]
   mode    0644
   variables(
-    :fqdn        => node[:fqdn],
+    :fqdn        => node[:gitlab][:ci][:server_name],
     :app_name    => 'gitlab-ci',
     :app_home    => node[:gitlab][:ci][:app_home],
     :environment => node[:gitlab][:ci][:puma_environment]
