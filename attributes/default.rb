@@ -1,7 +1,8 @@
 # VERSIONS (only change if you know what you are doing!)
-default[:gitlab][:branch]         = 'v6.0.1'
-default[:gitlab][:shell][:branch] = 'v1.7.1'
-default[:gitlab][:ci][:branch]    = 'v3.1.0'
+default[:gitlab][:branch]               = 'v6.0.1'
+default[:gitlab][:shell][:branch]       = 'v1.7.1'
+default[:gitlab][:ci][:branch]          = 'v3.1.0'
+default[:gitlab][:ci][:runner][:branch] = 'master'
 
 # GITLAB
 default[:gitlab][:server_name]      = 'gitlab.local'
@@ -77,6 +78,14 @@ default[:gitlab][:ci][:database][:database] = 'gitlab_ci'
 default[:gitlab][:ci][:database][:username] = 'gitlab_ci'
 
 # GITLAB CI RUNNER
+default[:gitlab][:ci][:runner][:user]             = node[:gitlab][:user]
+default[:gitlab][:ci][:runner][:user_shell]       = node[:gitlab][:user_shell]
+default[:gitlab][:ci][:runner][:user_manage_home] = node[:gitlab][:user_manage_home]
+default[:gitlab][:ci][:runner][:group]            = node[:gitlab][:group]
+default[:gitlab][:ci][:runner][:home]             = node[:gitlab][:home]
+default[:gitlab][:ci][:runner][:app_home]         = "#{node[:gitlab][:ci][:home]}/gitlab-ci-runner"
+default[:gitlab][:ci][:runner][:marker_dir]       = "#{node[:gitlab][:ci][:home]}/.markers"
+default[:gitlab][:ci][:runner][:url]              = 'https://github.com/gitlabhq/gitlab-ci-runner'
 
 
 # WEBSERVER
