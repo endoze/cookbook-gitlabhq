@@ -8,13 +8,12 @@ Vagrant.configure("2") do |config|
   config.vm.hostname = "gitlabhq-berkshelf"
   config.vm.box = "precise64"
   config.vm.box_url = "http://files.vagrantup.com/precise64.box"
-  config.vm.network :private_network, ip: "33.33.33.10"
-  config.ssh.max_tries = 40
-  config.ssh.timeout   = 120
+  config.vm.network :private_network, ip: "10.13.37.23"
+  config.vm.network :private_network, ip: "10.13.37.42"
   config.berkshelf.berksfile_path = "./Berksfile"
   config.berkshelf.enabled = true
 
-  config.vm.provision :shell, :inline => "sudo apt-get update && sudo apt-get install --yes build-essential && gem install chef --version '~> 11' --no-rdoc --no-ri --conservative"
+  config.omnibus.chef_version = :latest
 
   config.vm.provider :virtualbox do |v, override|
     v.customize ["modifyvm", :id, "--memory", MEMORY.to_i]
@@ -26,7 +25,6 @@ Vagrant.configure("2") do |config|
 
     chef.add_recipe "sudo"
     chef.add_recipe "gitlabhq::default"
-    chef.add_recipe "gitlabhq::backup"
     
     chef.json = {
       :mysql => {
@@ -35,8 +33,11 @@ Vagrant.configure("2") do |config|
         :server_repl_password => 'replpass'
       },
       :gitlab => {
+        :server_name => '10.13.37.23',
+
         :ci => {
-          :allowed_urls => ['https://gitlab.local']
+          :server_name => 'https://10.13.37.42',
+          :allowed_urls => 'https://10.13.37.23'
         }
       },
       :authorization => {
