@@ -69,12 +69,9 @@ template '/etc/init.d/gitlab' do
   )
 end
 
-# register and start gitlab service
+# Register gitlab service
 service 'gitlab' do
   supports :status => true, :restart => true, :reload => true
-  action [ :enable, :start ]
-  retries 2
-  ignore_failure true
 end
 
 # Start gitlab on boot
@@ -196,6 +193,11 @@ hostsfile_entry '127.0.0.1' do
   hostname  node[:gitlab][:hostsfile_entry]
   action    :append
   not_if    { node[:gitlab][:hostsfile_entry].empty? }
+end
+
+# Enable and start gitlab service
+service 'gitlab' do
+  action [ :enable, :restart ]
 end
 
 # Make available through webserver
