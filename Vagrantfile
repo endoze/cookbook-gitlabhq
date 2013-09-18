@@ -20,7 +20,7 @@ Vagrant.configure("2") do |config|
     v.customize ["modifyvm", :id, "--cpus", CORES.to_i]
   end
 
-  config.vm.synced_folder "../cookbook-gitlabhq-src/", "/home/git", nfs: true
+  config.vm.synced_folder "../cookbook-gitlabhq-src/", "/home/git", :nfs => true
 
   config.vm.provision :chef_solo do |chef|
     chef.data_bags_path = "data_bags"
@@ -40,11 +40,15 @@ Vagrant.configure("2") do |config|
         :group => 'vagrant',
 
         :server_name => '10.13.37.23',
-
+ 
         :ci => {
           :user_create => false,
           :server_name => '10.13.37.42',
           :allowed_urls => 'https://10.13.37.23'
+        },
+     
+        :shell => {
+          :auth_file => '/home/vagrant/.ssh/authorized_keys'
         }
       },
       :authorization => {
