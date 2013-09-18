@@ -101,7 +101,15 @@ default[:gitlab][:webserver][:ssl_req]             = "/C=US/ST=Several/L=Localit
 default[:build_essential][:compiletime] = true
 
 # GIT
-default[:gitlab][:git][:include_recipe] = "default"
+case node[:platform]
+when 'ubuntu'
+  if node[:platform_version].to_f <= 12.04
+    default[:gitlab][:git][:include_recipe] = "source"
+  end
+
+else
+  default[:gitlab][:git][:include_recipe] = "default"
+end
 
 # GIT::SOURCE
 default[:git][:prefix] = "/usr/local"
