@@ -22,6 +22,7 @@ depends 'backup'
 depends 'hostsfile'
 depends 'nginx'
 depends 'git'
+depends 'yumrepo'
 
 %w{ debian ubuntu }.each do |os|
     supports os

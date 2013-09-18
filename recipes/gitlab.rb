@@ -99,8 +99,8 @@ template "#{node[:gitlab][:app_home]}/config/gitlab.yml" do
     :shell_repos_path  => node[:gitlab][:shell][:repos_path],
     :shell_hooks_path  => node[:gitlab][:shell][:hooks_path],
     :shell_ssh_port    => node[:gitlab][:shell][:ssh_port],
-    :backup_path       => node[:gitlab][:backup][:path],
-    :backup_keep_time  => node[:gitlab][:backup][:keep_time]
+    :backup_path       => node[:gitlab][:backup_path],
+    :backup_keep_time  => node[:gitlab][:backup_keep_time]
   )
   notifies :restart, 'service[gitlab]', :delayed
 end
@@ -140,7 +140,7 @@ directory node[:gitlab][:satellite_path] do
 end
 
 # Create the gitlab Backup folder
-directory node[:gitlab][:backup][:path] do
+directory node[:gitlab][:backup_path] do
   owner  node[:gitlab][:user]
   group  node[:gitlab][:group]
   mode   0755

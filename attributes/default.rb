@@ -22,6 +22,8 @@ default[:gitlab][:satellite_path]   = "#{node[:gitlab][:home]}/gitlab-satellites
 default[:gitlab][:url]              = 'https://github.com/gitlabhq/gitlabhq'
 default[:gitlab][:gems]             = %w{ charlock_holmes }
 default[:gitlab][:python_packages]  = %w{ pygments }
+default[:gitlab][:backup_path]      = "#{node[:gitlab][:app_home]}/backups"
+default[:gitlab][:backup_keep_time] = 604800
 
 # GITLAB SHELL
 default[:gitlab][:shell][:ssh_port]          = 22
@@ -45,8 +47,6 @@ default[:gitlab][:database][:database] = 'gitlab'
 default[:gitlab][:database][:username] = 'gitlab'
 
 # GITLAB BACKUP
-default[:gitlab][:backup][:path]             = "#{node[:gitlab][:app_home]}/backups"
-default[:gitlab][:backup][:keep_time]        = 604800
 default[:gitlab][:backup][:remote][:handler] = []
 
 # GITLAB BACKUP AWS HANDLER
