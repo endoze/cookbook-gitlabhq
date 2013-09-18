@@ -64,7 +64,7 @@ describe 'gitlabhq::gitlab' do
   end
 
   it "should create a directory for gitlab backups" do
-    expect(@chef_run).to create_directory "#{@chef_run.node[:gitlab][:backup][:path]}"
+    expect(@chef_run).to create_directory "#{@chef_run.node[:gitlab][:backup_path]}"
   end
 
   it "should create a unicorn.rb file" do
