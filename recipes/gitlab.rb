@@ -13,6 +13,7 @@ user node[:gitlab][:user] do
   home     node[:gitlab][:home]
   shell    node[:gitlab][:user_shell]
   supports :manage_home => node[:gitlab][:user_manage_home]
+  only_if  { node[:gitlab][:user_create] === true }
 end
 
 # Create directory to store markers in
@@ -68,14 +69,17 @@ template '/etc/init.d/gitlab' do
   )
 end
 
+# register and start gitlab service
+service 'gitlab' do
+  supports :status => true, :restart => true, :reload => true
+  action [ :enable, :start ]
+  retries 2
+  ignore_failure true
+end
+
 # Start gitlab on boot
 execute 'gitlab-on-boot' do
   command "update-rc.d gitlab defaults 21"
-end
-
-# Register  service
-service 'gitlab' do
-  supports :status => true, :restart => true, :reload => true
 end
 
 # Render gitlab config file
@@ -194,12 +198,6 @@ execute "git-config-email" do
   creates "#{node[:gitlab][:marker_dir]}/.git-config-email"
 end
 
-# Enable and start gitlab service
-service 'gitlab' do
-  action [ :enable, :start ]
-  retries 2
-end
-
 # Backup
 include_recipe 'gitlabhq::backup'
 
@@ -207,7 +205,7 @@ include_recipe 'gitlabhq::backup'
 hostsfile_entry '127.0.0.1' do
   hostname  node[:gitlab][:hostsfile_entry]
   action    :append
-  only_if   { node[:gitlab][:hostsfile_entry] }
+  not_if   { node[:gitlab][:hostsfile_entry] === false }
 end
 
 # Make available through webserver

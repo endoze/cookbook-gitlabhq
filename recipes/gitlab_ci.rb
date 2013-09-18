@@ -13,6 +13,7 @@ user node[:gitlab][:ci][:user] do
   home     node[:gitlab][:ci][:home]
   shell    node[:gitlab][:ci][:user_shell]
   supports :manage_home => node[:gitlab][:ci][:user_manage_home]
+  only_if  { node[:gitlab][:ci][:user_create] === true }
 end
 
 # Create directory to store markers in
@@ -43,14 +44,17 @@ template '/etc/init.d/gitlab_ci' do
   )
 end
 
+# Register and start service
+service 'gitlab_ci' do
+  supports :status => true, :restart => true, :reload => true
+  action [ :enable, :start ]
+  retries 2
+  ignore_failure true
+end
+
 # Start ci on boot
 execute 'gitlab-ci-on-boot' do
   command "update-rc.d gitlab_ci defaults 21"
-end
-
-# Register Service
-service 'gitlab_ci' do
-  supports :status => true, :restart => true, :reload => true
 end
 
 # Render gitlab ci config file
@@ -141,13 +145,7 @@ end
 hostsfile_entry '127.0.0.1' do
   hostname  node[:gitlab][:ci][:hostsfile_entry]
   action    :append
-  only_if   { node[:gitlab][:ci][:hostsfile_entry] }
-end
-
-# Enable and start service
-service 'gitlab_ci' do
-  action [ :enable, :start ]
-  retries 2
+  not_if   { node[:gitlab][:ci][:hostsfile_entry] === false }
 end
 
 # Make available through webserver

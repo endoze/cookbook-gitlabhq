@@ -9,6 +9,7 @@ default[:gitlab][:server_name]      = 'gitlab.local'
 default[:gitlab][:hostsfile_entry]  = node[:gitlab][:server_name]
 default[:gitlab][:https]            = true
 default[:gitlab][:user]             = 'git'
+default[:gitlab][:user_create]      = true
 default[:gitlab][:user_shell]       = '/bin/bash'
 default[:gitlab][:user_manage_home] = true
 default[:gitlab][:group]            = 'git'
@@ -58,6 +59,7 @@ default[:gitlab][:backup][:remote][:aws_s3][:keep]   = 10
 default[:gitlab][:ci][:server_name]      = 'gitlab_ci.local'
 default[:gitlab][:ci][:hostsfile_entry]  = node[:gitlab][:ci][:server_name]
 default[:gitlab][:ci][:user]             = node[:gitlab][:user]
+default[:gitlab][:ci][:user_create]      = node[:gitlab][:user_create]
 default[:gitlab][:ci][:user_shell]       = node[:gitlab][:user_shell]
 default[:gitlab][:ci][:user_manage_home] = node[:gitlab][:user_manage_home]
 default[:gitlab][:ci][:group]            = node[:gitlab][:group]
@@ -79,6 +81,7 @@ default[:gitlab][:ci][:database][:username] = 'gitlab_ci'
 
 # GITLAB CI RUNNER
 default[:gitlab][:ci][:runner][:user]             = node[:gitlab][:user]
+default[:gitlab][:ci][:runner][:user_create]      = node[:gitlab][:user_create]
 default[:gitlab][:ci][:runner][:user_shell]       = node[:gitlab][:user_shell]
 default[:gitlab][:ci][:runner][:user_manage_home] = node[:gitlab][:user_manage_home]
 default[:gitlab][:ci][:runner][:group]            = node[:gitlab][:group]

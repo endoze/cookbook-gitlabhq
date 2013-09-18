@@ -5,6 +5,7 @@ user node[:gitlab][:ci][:runner][:user] do
   home     node[:gitlab][:ci][:runner][:home]
   shell    node[:gitlab][:ci][:runner][:user_shell]
   supports :manage_home => node[:gitlab][:ci][:runner][:user_manage_home]
+  only_if  { node[:gitlab][:ci][:runner][:user_create] === true }
 end
 
 # Create directory to store markers in
