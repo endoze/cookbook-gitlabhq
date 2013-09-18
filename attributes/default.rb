@@ -1,7 +1,7 @@
 # VERSIONS (only change if you know what you are doing!)
-default[:gitlab][:branch]               = 'v6.0.1'
+default[:gitlab][:branch]               = '6-1-stable'
 default[:gitlab][:shell][:branch]       = 'v1.7.1'
-default[:gitlab][:ci][:branch]          = 'v3.1.0'
+default[:gitlab][:ci][:branch]          = '3-1-stable'
 default[:gitlab][:ci][:runner][:branch] = 'master'
 
 # GITLAB
