@@ -199,9 +199,9 @@ vagrant plugin install vagrant-omnibus
 vagrant plugin install vagrant-berkshelf
 ```
 
-For working nfs-support you have to install nfsd on your host machine (e.g. debian/ubuntu)
+For working nfs-support you have to install nfs-kernel-server, nfs-common and portmap on your host machine (e.g. debian/ubuntu)
 ```shell
-sudo apt-get install nfsd
+sudo apt-get install nfs-kernel-server nfs-common portmap
 ```
 
 If you want to use VirtualBox-Powered sync folders instead of NFS just remove "nfs: true" from the Vagrantfile. Beware that they are really, really slow.  
