@@ -195,7 +195,7 @@ include_recipe 'gitlabhq::backup'
 hostsfile_entry '127.0.0.1' do
   hostname  node[:gitlab][:hostsfile_entry]
   action    :append
-  not_if   { node[:gitlab][:hostsfile_entry] === false }
+  not_if    { node[:gitlab][:hostsfile_entry].empty? }
 end
 
 # Make available through webserver

@@ -40,11 +40,13 @@ Vagrant.configure("2") do |config|
         :group => 'vagrant',
 
         :server_name => '10.13.37.23',
+        :hostsfile_entry => '',
  
         :ci => {
           :user_create => false,
           :server_name => '10.13.37.42',
-          :allowed_urls => 'https://10.13.37.23'
+          :allowed_urls => 'https://10.13.37.23',
+          :hostsfile_entry => '' 
         },
      
         :shell => {

@@ -133,13 +133,13 @@ default[:gitlab][:hostsfile_entry] = node[:gitlab][:server_name]
 default[:gitlab][:ci][:hostsfile_entry] = node[:gitlab][:ci][:server_name]
 ```
 
-If you want to deactivate this behaviour just set the attribute to `false`
+If you want to deactivate this behaviour just set the attribute to empty
 ```ruby
 # GITLAB
-default[:gitlab][:hostsfile_entry] = false 
+default[:gitlab][:hostsfile_entry] = ''
 
 # GITLAB CI
-default[:gitlab][:ci][:hostsfile_entry] = false 
+default[:gitlab][:ci][:hostsfile_entry] = ''
 ```
 
 #### Git
