@@ -180,22 +180,12 @@ execute 'gitlab-bundle-rake' do
   creates "#{node[:gitlab][:marker_dir]}/.gitlab-setup"
 end
 
-# Configure git
-execute "git-config-username" do
-  command "git config --global user.name Gitlab && touch #{node[:gitlab][:marker_dir]}/.git-config-username"
-  cwd     node[:gitlab][:home]
-  user    node[:gitlab][:user]
-  group   node[:gitlab][:group]
-  environment ({"HOME" => node[:gitlab][:home]})
-  creates "#{node[:gitlab][:marker_dir]}/.git-config-username"
-end
-execute "git-config-email" do
-  command "git config --global user.email #{node[:gitlab][:email_from]} && touch #{node[:gitlab][:marker_dir]}/.git-config-email"
-  cwd     node[:gitlab][:home]
-  user    node[:gitlab][:user]
-  group   node[:gitlab][:group]
-  environment ({"HOME" => node[:gitlab][:home]})
-  creates "#{node[:gitlab][:marker_dir]}/.git-config-email"
+# Render gitconfig into gitlab users home
+template File.join(Dir.home(node[:gitlab][:user]), '.gitconfig') do
+  source "gitlab.gitconfig.erb"
+  owner  node[:gitlab][:user]
+  group  node[:gitlab][:group]
+  mode   0644
 end
 
 # Backup
