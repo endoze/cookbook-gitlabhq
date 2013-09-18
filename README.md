@@ -5,53 +5,6 @@ This cookbook installs and configures GitLab and GitLab Ci.
 [![Build Status](https://secure.travis-ci.org/WideEyeLabs/cookbook-gitlabhq.png?branch=master)](http://travis-ci.org/WideEyeLabs/cookbook-gitlabhq?branch=master)
 
 
-Usage
------
-To install GitLab, GitLab Shell and GitLab CI just add the default recipe to your nodes run_list
-```ruby
-"recipe[gitlab]"
-```
-
-To just install GitLab and GitLab Shell add the `gitlab` recipe to your nodes run_list
-```ruby
-"recipe[gitlab::gitlab]"
-```
-
-To just install GitLab CI add the `gitlab_ci` recipe to your nodes run_list
-```ruby
-"recipe[gitlab::gitlab_ci]"
-```
-
-To install a GitLab Ci Runner add the `gitlab_ci_runner` to your nodes run_list
-```ruby
-"recipe[gitlab::gitlab_ci_runner]"
-```
-
-Vagrant
------
-With Vagrant you can easily Test and Develop GitLab. First you have to install the plugins vagrant-omnibus and vagrant-berkshelf
-```shell
-vagrant plugin install vagrant-omnibus
-vagrant plugin install vagrant-berkshelf
-```
-
-For working nfs-support you have to install nfsd on your host machine (e.g. debian/ubuntu)
-```shell
-sudo apt-get install nfsd
-```
-
-If you want to use VirtualBox-Powered sync folders instead of NFS just remove "nfs: true" from the Vagrantfile. Beware that they are really, really slow.  
-
-Now you are ready to initialize the Vagrant-powered VirtualBox
-```shell
-vagrant up
-```
-
-After the successul run you can reach GitLab under https://10.13.37.23 and GitLab CI under https://10.13.37.42   
-
-The sources are per default at ../cookbook-gitlabhq-src/
-
-
 Configuration
 -----
 #### GitLab & GitLab Shell
@@ -214,6 +167,53 @@ You can force to install ruby with `ruby_build` by overriding the attribute
 ```ruby
 default[:gitlab][:install_ruby] = '1.9.3-p392'
 ```
+
+
+Usage
+-----
+To install GitLab, GitLab Shell and GitLab CI just add the default recipe to your nodes run_list
+```ruby
+"recipe[gitlab]"
+```
+
+To just install GitLab and GitLab Shell add the `gitlab` recipe to your nodes run_list
+```ruby
+"recipe[gitlab::gitlab]"
+```
+
+To just install GitLab CI add the `gitlab_ci` recipe to your nodes run_list
+```ruby
+"recipe[gitlab::gitlab_ci]"
+```
+
+To install a GitLab Ci Runner add the `gitlab_ci_runner` to your nodes run_list
+```ruby
+"recipe[gitlab::gitlab_ci_runner]"
+```
+
+Vagrant
+-----
+With Vagrant you can easily Test and Develop GitLab. First you have to install the plugins vagrant-omnibus and vagrant-berkshelf
+```shell
+vagrant plugin install vagrant-omnibus
+vagrant plugin install vagrant-berkshelf
+```
+
+For working nfs-support you have to install nfsd on your host machine (e.g. debian/ubuntu)
+```shell
+sudo apt-get install nfsd
+```
+
+If you want to use VirtualBox-Powered sync folders instead of NFS just remove "nfs: true" from the Vagrantfile. Beware that they are really, really slow.  
+
+Now you are ready to initialize the Vagrant-powered VirtualBox
+```shell
+vagrant up
+```
+
+After the successul run you can reach GitLab under https://10.13.37.23 and GitLab CI under https://10.13.37.42   
+
+The sources are per default at ../cookbook-gitlabhq-src/
 
 Contributing
 ------------
