@@ -16,12 +16,12 @@
 
 APP_USER="<%= @app_user %>"
 APP_ROOT="<%= @app_home %>"
-DAEMON_OPTS="-C $APP_ROOT/config/puma.rb -e production"
+DAEMON_OPTS="-C $APP_ROOT/config/puma.rb -e <%= @puma_environment %>"
 PID_PATH="$APP_ROOT/tmp/pids"
 WEB_SERVER_PID="$PID_PATH/puma.pid"
 SIDEKIQ_PID="$PID_PATH/sidekiq.pid"
-STOP_SIDEKIQ="RAILS_ENV=production bundle exec rake sidekiq:stop"
-START_SIDEKIQ="RAILS_ENV=production bundle exec rake sidekiq:start"
+STOP_SIDEKIQ="RAILS_ENV=<%= @environment %> bundle exec rake sidekiq:stop"
+START_SIDEKIQ="RAILS_ENV=<%= @environment %> bundle exec rake sidekiq:start"
 NAME="GitLab CI"
 DESC="Gitlab CI service"
 
@@ -45,7 +45,7 @@ start() {
     exit 1
   else
     if [ `whoami` = root ]; then
-      sudo -u $APP_USER -H bash -l -c "RAILS_ENV=production bundle exec puma $DAEMON_OPTS"
+      sudo -u $APP_USER -H bash -l -c "RAILS_ENV=<%= @environment %> bundle exec puma $DAEMON_OPTS"
       sudo -u $APP_USER -H bash -l -c "mkdir -p $PID_PATH && $START_SIDEKIQ  > /dev/null  2>&1 &"
       echo "$DESC started"
     fi

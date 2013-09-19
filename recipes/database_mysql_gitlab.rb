@@ -8,7 +8,6 @@ ruby_block 'save node data' do
   not_if { Chef::Config[:solo] }
 end
 
-database = node[:gitlab][:database][:database]
 database_user = node[:gitlab][:database][:username]
 database_password = node[:gitlab][:database][:password]
 database_host = node[:gitlab][:database][:host]
@@ -18,23 +17,28 @@ database_connection = {
   :password => node[:mysql][:server_root_password]
 }
 
-# Create the database
-mysql_database database do
-  connection      database_connection
-  action          :create
-end
+node[:gitlab][:envs].each do |env|
+  if env != 'production'
+    database = "#{node[:gitlab][:database][:database]}_#{env}"
+  else
+    database = node[:gitlab][:database][:database]
+  end
 
-# Create the database user
-mysql_database_user database_user do
-  connection      database_connection
-  password        database_password
-  database_name   database
-  action          :create
-end
+  mysql_database database do
+    connection   database_connection
+    action       :create
+  end
 
-# Grant all privileges to user on database
-mysql_database_user database_user do
-  connection      database_connection
-  database_name   database
-  action          :grant
+  mysql_database_user database_user do
+    connection    database_connection
+    password      database_password
+    database_name database
+  end
+
+  mysql_database_user database_user do
+    connection    database_connection
+    database_name database
+    action        :grant
+  end
+
 end

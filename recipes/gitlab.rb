@@ -64,8 +64,9 @@ template '/etc/init.d/gitlab' do
   mode   0755
   source 'gitlab.init.erb'
   variables(
-    :app_home  => node[:gitlab][:app_home],
-    :app_user  => node[:gitlab][:user]
+    :app_home    => node[:gitlab][:app_home],
+    :app_user    => node[:gitlab][:user],
+    :environment => node[:gitlab][:environment]
   )
 end
 
@@ -158,23 +159,36 @@ end
 
 # Install gems with bundle install
 without_group = node[:gitlab][:database][:type] == 'mysql' ? 'postgres' : 'mysql'
+if node[:gitlab][:environment] == 'production'
+  without_group << ' development test'
+end
 
 execute 'gitlab-bundle-install' do
-  command "bundle install --without development test #{without_group} --deployment"
+  command "bundle install --deployment --without #{without_group} && touch #{node[:gitlab][:marker_dir]}/.gitlab-bundle-#{node[:gitlab][:environment]}"
   cwd     node[:gitlab][:app_home]
   user    node[:gitlab][:user]
   group   node[:gitlab][:group]
   environment({ 'LANG' => 'en_US.UTF-8', 'LC_ALL' => 'en_US.UTF-8' })
-  creates "#{node[:gitlab][:app_home]}/vendor/bundle"
+  creates "#{node[:gitlab][:marker_dir]}/.gitlab-bundle-#{node[:gitlab][:environment]}"
 end
 
-# Setup database for Gitlab
-execute 'gitlab-bundle-rake' do
-  command "bundle exec rake gitlab:setup RAILS_ENV=production force=yes && touch #{node[:gitlab][:marker_dir]}/.gitlab-setup"
-  cwd     node[:gitlab][:app_home]
+# Respect old .gitlab-setup file
+file "#{node[:gitlab][:marker_dir]}/.gitlab-setup-production" do
   user    node[:gitlab][:user]
   group   node[:gitlab][:group]
-  creates "#{node[:gitlab][:marker_dir]}/.gitlab-setup"
+  action  :create_if_missing
+  only_if  { File.exist?("#{node[:gitlab][:marker_dir]}/.gitlab-setup") }
+end
+
+node[:gitlab][:ci][:envs].each do |env|
+  # Setup database for Gitlab
+  execute 'gitlab-bundle-rake' do
+    command "bundle exec rake gitlab:setup RAILS_ENV=#{env} force=yes && touch #{node[:gitlab][:marker_dir]}/.gitlab-setup-#{env}"
+    cwd     node[:gitlab][:app_home]
+    user    node[:gitlab][:user]
+    group   node[:gitlab][:group]
+    creates "#{node[:gitlab][:marker_dir]}/.gitlab-setup-#{env}"
+  end
 end
 
 # Render gitconfig into gitlab users home

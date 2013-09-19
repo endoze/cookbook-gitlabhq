@@ -39,8 +39,10 @@ template '/etc/init.d/gitlab_ci' do
   mode   0755
   source 'gitlab_ci.init.erb'
   variables(
-    :app_home    => node[:gitlab][:ci][:app_home],
-    :app_user    => node[:gitlab][:ci][:user]
+    :app_home         => node[:gitlab][:ci][:app_home],
+    :app_user         => node[:gitlab][:ci][:user],
+    :environment      => node[:gitlab][:ci][:environment],
+    :puma_environment => node[:gitlab][:ci][:puma_environment]
   )
 end
 
@@ -71,7 +73,7 @@ end
 
 # Write the database.yml
 template "#{node[:gitlab][:ci][:app_home]}/config/database.yml" do
-  source 'gitlab.database.yml.erb'
+  source 'gitlab_ci.database.yml.erb'
   owner  node[:gitlab][:ci][:user]
   group  node[:gitlab][:ci][:group]
   mode   0644
@@ -106,24 +108,37 @@ directory "#{node[:gitlab][:ci][:app_home]}/tmp/pids" do
 end
 
 # Install gems with bundle install
-without_group = node[:gitlab][:database][:type] == 'mysql' ? 'postgres' : 'mysql'
+without_group = node[:gitlab][:database][:type]   == 'mysql' ? 'postgres' : 'mysql'
+if node[:gitlab][:ci][:environment] == 'production'
+  without_group << ' development test'
+end
 
 execute 'gitlab-ci-bundle-install' do
-  command "bundle install --without development test #{without_group} --deployment"
+  command "bundle install --deployment --without #{without_group} && touch #{node[:gitlab][:ci][:marker_dir]}/.gitlab-ci-bundle-#{node[:gitlab][:ci][:environment]}"
   cwd     node[:gitlab][:ci][:app_home]
   user    node[:gitlab][:ci][:user]
   group   node[:gitlab][:ci][:group]
   environment({ 'LANG' => 'en_US.UTF-8', 'LC_ALL' => 'en_US.UTF-8' })
-  creates "#{node[:gitlab][:ci][:app_home]}/vendor/bundle"
+  creates "#{node[:gitlab][:ci][:marker_dir]}/.gitlab-ci-setup-#{node[:gitlab][:ci][:environment]}"
 end
 
-# Setup database for Gitlab Ci
-execute 'gitlab-ci-bundle-rake' do
-  command "bundle exec rake db:setup RAILS_ENV=production && touch #{node[:gitlab][:ci][:marker_dir]}/.gitlab-ci-setup"
-  cwd     node[:gitlab][:ci][:app_home]
+# Respect old .gitlab-ci-setup file
+file "#{node[:gitlab][:ci][:marker_dir]}/.gitlab-ci-setup-production" do
   user    node[:gitlab][:ci][:user]
   group   node[:gitlab][:ci][:group]
-  creates "#{node[:gitlab][:ci][:marker_dir]}/.gitlab-ci-setup"
+  action  :create_if_missing
+  only_if  { File.exist?("#{node[:gitlab][:ci][:marker_dir]}/.gitlab-ci-setup") }
+end
+
+node[:gitlab][:ci][:envs].each do |env|
+  # Setup database for Gitlab Ci
+  execute 'gitlab-ci-bundle-rake' do
+    command "bundle exec rake db:setup RAILS_ENV=#{env} && touch #{node[:gitlab][:ci][:marker_dir]}/.gitlab-ci-setup-#{env}"
+    cwd     node[:gitlab][:ci][:app_home]
+    user    node[:gitlab][:ci][:user]
+    group   node[:gitlab][:ci][:group]
+    creates "#{node[:gitlab][:ci][:marker_dir]}/.gitlab-ci-setup-#{env}"
+  end
 end
 
 # Render puma template

@@ -5,6 +5,7 @@ default[:gitlab][:ci][:branch]          = '3-1-stable'
 default[:gitlab][:ci][:runner][:branch] = 'master'
 
 # GITLAB
+default[:gitlab][:environment]      = 'production'
 default[:gitlab][:server_name]      = 'gitlab.local'
 default[:gitlab][:hostsfile_entry]  = node[:gitlab][:server_name]
 default[:gitlab][:https]            = true
@@ -56,6 +57,7 @@ default[:gitlab][:backup][:remote][:aws_s3][:path]   = '/backups'
 default[:gitlab][:backup][:remote][:aws_s3][:keep]   = 10
 
 # GITLAB CI
+default[:gitlab][:ci][:environment]      = 'production'
 default[:gitlab][:ci][:server_name]      = 'gitlab_ci.local'
 default[:gitlab][:ci][:hostsfile_entry]  = node[:gitlab][:ci][:server_name]
 default[:gitlab][:ci][:user]             = node[:gitlab][:user]
@@ -67,7 +69,7 @@ default[:gitlab][:ci][:home]             = node[:gitlab][:home]
 default[:gitlab][:ci][:app_home]         = "#{node[:gitlab][:ci][:home]}/gitlab-ci"
 default[:gitlab][:ci][:marker_dir]       = "#{node[:gitlab][:ci][:home]}/.markers"
 default[:gitlab][:ci][:url]              = 'https://github.com/gitlabhq/gitlab-ci'
-default[:gitlab][:ci][:puma_environment] = 'production'
+default[:gitlab][:ci][:puma_environment] = node[:gitlab][:ci][:environment]
 default[:gitlab][:ci][:puma_workers]     = 1
 
 # GITLAB CI DATABASE
@@ -168,4 +170,16 @@ else
     python-dev libcurl4-gnutls-dev libexpat1-dev
     gettext libz-dev
   }
+end
+
+# Envs
+default[:gitlab][:envs] = ['production']
+if node[:gitlab][:environment] != 'production'
+  default[:gitlab][:envs] << 'development'
+  default[:gitlab][:envs] << 'test'
+end
+default[:gitlab][:ci][:envs] = ['production']
+if node[:gitlab][:ci][:environment] != 'production'
+  default[:gitlab][:ci][:envs] << 'development'
+  default[:gitlab][:ci][:envs] << 'test'
 end

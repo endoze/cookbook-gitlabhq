@@ -27,14 +27,19 @@ Vagrant.configure("2") do |config|
 
     chef.add_recipe "sudo"
     chef.add_recipe "gitlabhq::default"
+    chef.add_recipe "phantomjs"
     
     chef.json = {
+      :phantomjs => {
+        :version => '1.8.1'
+      },
       :mysql => {
         :server_root_password => 'rootpass',
         :server_debian_password => 'debpass',
         :server_repl_password => 'replpass'
       },
       :gitlab => {
+        :environment => 'development',
         :user_create => false,
         :user => 'vagrant',
         :group => 'vagrant',
@@ -43,6 +48,7 @@ Vagrant.configure("2") do |config|
         :hostsfile_entry => '',
  
         :ci => {
+          :environment => 'development',
           :user_create => false,
           :server_name => '10.13.37.42',
           :allowed_urls => 'https://10.13.37.23',
