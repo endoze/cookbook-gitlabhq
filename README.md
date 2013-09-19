@@ -111,7 +111,7 @@ default[:gitlab][:backup][:remote][:handler] = []
 Add `aws_s3` to the backup remote handler attribute
 
 ```ruby
-default[:gitlab][:backup][:remote][:handler] = [:aws_s3]
+default[:gitlab][:backup][:remote][:handler] = ['aws_s3']
 ```
 
 Available attributes to configure are 
