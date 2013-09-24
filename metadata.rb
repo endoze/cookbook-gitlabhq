@@ -8,8 +8,6 @@ version          '0.5.0'
 
 depends 'build-essential'
 depends 'readline'
-depends 'sudo'
-depends 'openssh'
 depends 'xml'
 depends 'zlib'
 depends 'python'

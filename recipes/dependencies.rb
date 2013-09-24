@@ -8,8 +8,6 @@ include_recipe 'gitlabhq::ruby'
 %w{
   build-essential
   readline
-  sudo
-  openssh
   xml
   zlib
   redisio::install

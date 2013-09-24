@@ -163,7 +163,7 @@ if node[:gitlab][:environment] == 'production'
   without_group << ' development test'
 end
 
-execute 'gitlab-bundle-install' do
+execute "gitlab-bundle-install-#{node[:gitlab][:environment]}" do
   command "bundle install --deployment --without #{without_group} && touch #{node[:gitlab][:marker_dir]}/.gitlab-bundle-#{node[:gitlab][:environment]}"
   cwd     node[:gitlab][:app_home]
   user    node[:gitlab][:user]
@@ -182,7 +182,7 @@ end
 
 node[:gitlab][:ci][:envs].each do |env|
   # Setup database for Gitlab
-  execute 'gitlab-bundle-rake' do
+  execute "gitlab-bundle-rake-#{env}" do
     command "bundle exec rake gitlab:setup RAILS_ENV=#{env} force=yes && touch #{node[:gitlab][:marker_dir]}/.gitlab-setup-#{env}"
     cwd     node[:gitlab][:app_home]
     user    node[:gitlab][:user]

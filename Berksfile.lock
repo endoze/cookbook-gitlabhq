@@ -3,12 +3,6 @@
     "gitlabhq": {
       "path": "."
     },
-    "ulimit": {
-      "locked_version": "0.2.0"
-    },
-    "sudo": {
-      "locked_version": "2.1.4"
-    },
     "phantomjs": {
       "locked_version": "1.0.2"
     },
@@ -17,12 +11,6 @@
     },
     "readline": {
       "locked_version": "0.0.3"
-    },
-    "openssh": {
-      "locked_version": "1.2.2"
-    },
-    "iptables": {
-      "locked_version": "0.12.0"
     },
     "xml": {
       "locked_version": "1.1.2"
@@ -38,6 +26,9 @@
     },
     "redisio": {
       "locked_version": "1.7.0"
+    },
+    "ulimit": {
+      "locked_version": "0.2.0"
     },
     "ruby_build": {
       "locked_version": "0.8.0"

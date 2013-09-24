@@ -119,9 +119,6 @@ default[:git][:version] = "1.8.4"
 default[:git][:url] = "https://git-core.googlecode.com/files/git-#{node[:git][:version]}.tar.gz"
 default[:git][:checksum] = "ed6dbf91b56c1540627563b5e8683fe726dac881ae028f3f17650b88fcb641d7"
 
-# OPENSSH 
-default[:openssh][:server][:permit_user_environment] = 'yes'
-
 # RUBY
 case node[:platform]
   when 'redhat','centos','scientific','amazon'

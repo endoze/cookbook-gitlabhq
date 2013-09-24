@@ -1,8 +1,8 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-MEMORY = ENV['GITLAB_VAGRANT_MEMORY'] || '1024'
-CORES = ENV['GITLAB_VAGRANT_CORES'] || '1'
+MEMORY = ENV['GITLAB_VAGRANT_MEMORY'] || '4096'
+CORES = ENV['GITLAB_VAGRANT_CORES'] || '4'
 
 Vagrant.configure("2") do |config|
   config.vm.hostname = "gitlabhq-berkshelf"
@@ -24,10 +24,10 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision :chef_solo do |chef|
     chef.data_bags_path = "data_bags"
+    chef.nfs = true
 
-    chef.add_recipe "sudo"
-    chef.add_recipe "gitlabhq::default"
     chef.add_recipe "phantomjs"
+    chef.add_recipe "gitlabhq::default"
     
     chef.json = {
       :phantomjs => {
@@ -57,13 +57,6 @@ Vagrant.configure("2") do |config|
      
         :shell => {
           :auth_file => '/home/vagrant/.ssh/authorized_keys'
-        }
-      },
-      :authorization => {
-        :sudo => {
-          :groups => ["admin", "wheel", "sysadmin"],
-          :users => ["vagrant"],
-          :passwordless => true
         }
       }
     }

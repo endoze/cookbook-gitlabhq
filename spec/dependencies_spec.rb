@@ -8,8 +8,6 @@ describe 'gitlabhq::dependencies' do
     %w{
       build-essential
       readline
-      sudo
-      openssh
       xml
       zlib
       redisio::install
