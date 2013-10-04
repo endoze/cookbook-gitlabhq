@@ -1,47 +1,40 @@
+#
+# Cookbook Name:: gitlabhq
+# Recipe:: default
+#
+# Copyright 2013, Wide Eye Labs
+#
+# MIT License
+#
+
 # Include cookbook dependencies
 %w{
-  ruby_build
   build-essential
   readline
   sudo
-  openssh
   xml
   zlib
   python::package
   python::pip
   redisio::install
   redisio::enable
+  hosts_file
 }.each do |recipe|
   include_recipe recipe
 end
 
-# Install ruby
-ruby_build_ruby node[:gitlab][:install_ruby]
-
-# Set PATH for remainder of recipe.
-ENV['PATH'] = "#{node[:gitlab][:ruby_dir]}:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin:"
-
-# Install required packages for Gitlab
+# Install required packages for Gitlab and CI
 node[:gitlab][:packages].each do |pkg|
   package pkg
 end
 
+# Install ruby
+include_recipe 'rvm::system_install'
+rvm_environment node[:gitlab][:install_ruby]
+
 # Install required Ruby Gems for Gitlab
 node[:gitlab][:gems].each do |gempkg|
-  gem_package gempkg do
-    action     :install
-    gem_binary "#{node[:gitlab][:ruby_dir]}/gem"
+  rvm_gem gempkg do
+    ruby_string node[:gitlab][:install_ruby]
   end
-end
-
-# Install pygments from pip
-node[:gitlab][:python_packages].each do |pypkg|
-  python_pip pypkg do
-    action :install
-  end
-end
-
-# Set up redis for Gitlab hooks
-link '/usr/bin/redis-cli' do
-  to '/usr/local/bin/redis-cli'
 end
