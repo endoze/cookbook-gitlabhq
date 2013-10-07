@@ -15,10 +15,10 @@ ssl_cert     = node[:gitlab][:ssl_certificate]
 https        = node[:gitlab][:https]
 ssl_req      = node[:gitlab][:ssl_req]
 
-local_aliases = [node[:fqdn], node[:gitlab][:server_name], node[:gitlab][:ci][:server_name]]
+local_aliases = %Q{ #{node[:gitlab][:server_name]} #{node[:gitlab][:ci][:server_name]} localhost }
 
 hosts_file_entry '127.0.0.1' do
-  hostname 'localhost'
+  hostname node.name
   aliases  local_aliases
   comment  "Set aliases for localhost"
 end
