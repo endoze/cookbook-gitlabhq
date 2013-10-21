@@ -38,7 +38,7 @@ include_recipe "#{gitlab_ci_db_config.database_type}::ruby"
 git node[:gitlab][:ci][:app_home] do
   repository  node[:gitlab][:ci][:url]
   reference   node[:gitlab][:ci][:branch]
-  action      :checkout
+  action      :sync
   user        node[:gitlab][:ci][:user]
   group       node[:gitlab][:ci][:group]
 end
@@ -111,7 +111,7 @@ directory "#{node[:gitlab][:ci][:app_home]}/tmp/pids" do
 end
 
 # Install gems with bundle install
-rvm_shell "gitlab-ci-bundle-install" do
+rvm_shell "Gitlab-CI bundle install" do
     ruby_string node[:gitlab][:install_ruby]
     cwd         node[:gitlab][:ci][:app_home]
     user        node[:gitlab][:ci][:user]
@@ -121,7 +121,7 @@ rvm_shell "gitlab-ci-bundle-install" do
 end
 
 # Migrate database
-rvm_shell "gitlab-ci-bundle-rake" do
+rvm_shell "Gitlab-CI rake db:migrate" do
     ruby_string node[:gitlab][:install_ruby]
     cwd         node[:gitlab][:ci][:app_home]
     user        node[:gitlab][:ci][:user]

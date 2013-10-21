@@ -63,7 +63,7 @@ end
 git node[:gitlab][:gitlab_shell_home] do
   repository node[:gitlab][:gitlab_shell_url]
   reference  node[:gitlab][:gitlab_shell_branch]
-  action     :checkout
+  action     :sync
   user       node[:gitlab][:user]
   group      node[:gitlab][:group]
 end
@@ -103,7 +103,7 @@ include_recipe "#{gitlab_db_config.database_type}::ruby"
 git node[:gitlab][:app_home] do
   repository  node[:gitlab][:gitlab_url]
   reference   node[:gitlab][:gitlab_branch]
-  action      :checkout
+  action      :sync
   user        node[:gitlab][:user]
   group       node[:gitlab][:group]
 end
@@ -131,7 +131,7 @@ template "#{node[:gitlab][:app_home]}/config/gitlab.yml" do
   group  node[:gitlab][:group]
   mode   0644
   variables(
-    :fqdn             => node[:fqdn],
+    :fqdn             => node[:gitlab][:server_name],
     :https_boolean    => node[:gitlab][:https],
     :git_user         => node[:gitlab][:git_user],
     :git_home         => node[:gitlab][:git_home],
@@ -191,7 +191,7 @@ end
 # Install gems with bundle install
 #without_group = node[:gitlab][:database][:type] == 'mysql' ? 'postgres' : 'mysql'
 
-rvm_shell "gitlab-bundle-install" do
+rvm_shell "Gitlab bundle install" do
     ruby_string node[:gitlab][:install_ruby]
     cwd         node[:gitlab][:app_home]
     user        node[:gitlab][:user]
@@ -201,7 +201,7 @@ rvm_shell "gitlab-bundle-install" do
 end
 
 
-rvm_shell "gitlab-bundle-rake" do
+rvm_shell "Gitlab rake db:migrate" do
     ruby_string node[:gitlab][:install_ruby]
     cwd         node[:gitlab][:app_home]
     user        node[:gitlab][:user]
