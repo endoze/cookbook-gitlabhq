@@ -10,16 +10,13 @@
 %w{
   gitlabhq::dependencies
   gitlabhq::git
-  gitlabhq::gitlab_users
-  gitlabhq::gitlab_shell
+  gitlabhq::ruby
   gitlabhq::database
   gitlabhq::gitlab
+  gitlabhq::ci
   gitlabhq::nginx
   gitlabhq::backup
 }.each do |recipe|
   include_recipe recipe
 end
 
-if node[:gitlab][:ci][:ci_enabled]
-  include_recipe 'gitlabhq::ci'
-end

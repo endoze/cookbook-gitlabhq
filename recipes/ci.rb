@@ -1,14 +1,49 @@
+#
+# Cookbook Name:: gitlabhq
+# Recipe:: default
+#
+# Copyright 2013, Wide Eye Labs
+#
+# MIT License
+#
+
+include_recipe 'gitlabhq::dependencies'
+
+# Create gitlab ci user
+user node[:gitlab][:ci][:user] do
+  comment  'Gitlab CI User'
+  home     node[:gitlab][:ci][:home]
+  shell    '/bin/bash'
+  supports :manage_home => true
+end
+
+# Add ruby t path for gitlab ci user
+template   "#{node[:gitlab][:ci][:home]}/.bashrc" do
+  owner    node[:gitlab][:ci][:user]
+  group    node[:gitlab][:ci][:user]
+  mode     0644
+  source   'bashrc.erb'
+  variables(
+    :ruby_dir => "#{node[:rvm][:root_path]}/environments/#{node[:gitlab][:install_ruby]}"
+  )
+end
+
+::Chef::Recipe.send(:include, Gitlabhq::Helper)
+
+gitlab_ci_db_config = gitlab_ci_database_config
+
+include_recipe "#{gitlab_ci_db_config.database_type}::ruby"
 
 # Clone gitlab-ci
 git node[:gitlab][:ci][:app_home] do
   repository  node[:gitlab][:ci][:url]
   reference   node[:gitlab][:ci][:branch]
-  action      :checkout
+  action      :sync
   user        node[:gitlab][:ci][:user]
   group       node[:gitlab][:ci][:group]
 end
 
-# Render gitlab init script
+# Render gitlab ci init script
 template '/etc/init.d/gitlab_ci' do
   owner  'root'
   group  'root'
@@ -45,13 +80,14 @@ template "#{node[:gitlab][:ci][:app_home]}/config/database.yml" do
   group  node[:gitlab][:ci][:group]
   mode   0644
   variables(
-    :adapter  => node[:gitlab][:ci][:database][:adapter],
-    :encoding => node[:gitlab][:ci][:database][:encoding],
-    :host     => node[:gitlab][:ci][:database][:host],
-    :database => node[:gitlab][:ci][:database][:database],
-    :pool     => node[:gitlab][:ci][:database][:pool],
-    :username => node[:gitlab][:ci][:database][:username],
-    :password => node[:gitlab][:ci][:database][:password]
+    :adapter  => gitlab_ci_db_config.adapter,
+    :encoding => gitlab_ci_db_config.encoding,
+    :host     => gitlab_ci_db_config.host,
+    :database => gitlab_ci_db_config.database,
+    :pool     => gitlab_ci_db_config.pool,
+    :port     => gitlab_ci_db_config.port,
+    :username => gitlab_ci_db_config.username,
+    :password => gitlab_ci_db_config.password
   )
   notifies :restart, 'service[gitlab_ci]'
 end
@@ -65,7 +101,7 @@ directory "#{node[:gitlab][:ci][:app_home]}/tmp/sockets" do
   recursive true
 end
 
-# Create directory for gitlab ci socket
+# Create directory for gitlab ci pids
 directory "#{node[:gitlab][:ci][:app_home]}/tmp/pids" do
   user      node[:gitlab][:ci][:user]
   group     node[:gitlab][:ci][:group]
@@ -75,23 +111,22 @@ directory "#{node[:gitlab][:ci][:app_home]}/tmp/pids" do
 end
 
 # Install gems with bundle install
-without_group = node[:gitlab][:database][:type] == 'mysql' ? 'postgres' : 'mysql'
-
-execute 'gitlab-ci-bundle-install' do
-  command "bundle install --without development test #{without_group} --deployment"
-  cwd     node[:gitlab][:ci][:app_home]
-  user    node[:gitlab][:ci][:user]
-  group   node[:gitlab][:ci][:group]
-  environment({ 'LANG' => 'en_US.UTF-8', 'LC_ALL' => 'en_US.UTF-8' })
-  creates "#{node[:gitlab][:ci][:app_home]}/vendor/bundle"
+rvm_shell "Gitlab-CI bundle install" do
+    ruby_string node[:gitlab][:install_ruby]
+    cwd         node[:gitlab][:ci][:app_home]
+    user        node[:gitlab][:ci][:user]
+    group       node[:gitlab][:ci][:group]
+    code        %{bundle install --without development test #{gitlab_ci_db_config.without_group} --deployment}
+    creates     "#{node[:gitlab][:ci][:app_home]}/vendor/bundle"
 end
 
-# Setup database for Gitlab Ci
-execute 'gitlab-ci-bundle-rake' do
-  command "bundle exec rake db:setup RAILS_ENV=production"
-  cwd     node[:gitlab][:ci][:app_home]
-  user    node[:gitlab][:ci][:user]
-  group   node[:gitlab][:ci][:group]
+# Migrate database
+rvm_shell "Gitlab-CI rake db:migrate" do
+    ruby_string node[:gitlab][:install_ruby]
+    cwd         node[:gitlab][:ci][:app_home]
+    user        node[:gitlab][:ci][:user]
+    group       node[:gitlab][:ci][:group]
+    code        %{bundle exec rake db:migrate RAILS_ENV=production}
 end
 
 # Render puma template

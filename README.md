@@ -13,8 +13,7 @@ Attributes
 ----------
 #### gitlabhq::default
 
-```ruby
-
+```
 default[:build_essential][:compiletime] = true
 default[:gitlab][:install_ruby] = '1.9.3-p392'
 default[:gitlab][:ruby_dir]     = "/usr/local/ruby/#{node[:gitlab][:install_ruby]}/bin"
@@ -98,7 +97,6 @@ default[:gitlab][:ci][:database][:host]     = 'localhost'
 default[:gitlab][:ci][:database][:pool]     = 5
 default[:gitlab][:ci][:database][:database] = 'gitlab_ci'
 default[:gitlab][:ci][:database][:username] = 'gitlab_ci'
-
 ```
 
 Usage

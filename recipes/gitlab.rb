@@ -1,9 +1,109 @@
+#
+# Cookbook Name:: gitlabhq
+# Recipe:: default
+#
+# Copyright 2013, Wide Eye Labs
+#
+# MIT License
+#
+
+include_recipe 'gitlabhq::dependencies'
+include_recipe 'gitlabhq::git'
+
+# Install pygments from pip
+node[:gitlab][:python_packages].each do |pypkg|
+  python_pip pypkg do
+    action :install
+  end
+end
+
+# Set up redis for Gitlab hooks
+link '/usr/bin/redis-cli' do
+  to '/usr/local/bin/redis-cli'
+end
+
+# CREATE GIT USER
+user node[:gitlab][:user] do
+  comment  'Gitlab User'
+  home     node[:gitlab][:home]
+  shell    '/bin/bash'
+  supports :manage_home => true
+end
+
+# Create a $HOME/.ssh folder
+directory "#{node[:gitlab][:home]}/.ssh" do
+  owner  node[:gitlab][:user]
+  group  node[:gitlab][:group]
+  mode   0700
+end
+
+# Add ruby to path
+template   "#{node[:gitlab][:home]}/.bashrc" do
+  owner    node[:gitlab][:user]
+  group    node[:gitlab][:user]
+  mode     0644
+  source   'bashrc.erb'
+  variables(
+      :ruby_dir => "#{node[:rvm][:root_path]}/environments/#{node[:gitlab][:install_ruby]}"
+  )
+end
+
+template "#{node[:gitlab][:home]}/.gitconfig" do
+  owner node[:gitlab][:user]
+  group node[:gitlab][:user]
+  mode 0644
+  source 'gitconfig.erb'
+  variables(
+    :git_user_name => node[:gitlab][:git_username],
+    :git_user_email => node[:gitlab][:git_email]
+  )
+end
+#
+# INSTALL GITLAB SHELL
+git node[:gitlab][:gitlab_shell_home] do
+  repository node[:gitlab][:gitlab_shell_url]
+  reference  node[:gitlab][:gitlab_shell_branch]
+  action     :sync
+  user       node[:gitlab][:user]
+  group      node[:gitlab][:group]
+end
+
+template "#{node[:gitlab][:gitlab_shell_home]}/config.yml" do
+  owner  node[:gitlab][:user]
+  group  node[:gitlab][:group]
+  mode   0644
+  variables(
+    :git_user         => node[:gitlab][:gitlab_shell_user],
+    :repos_path       => node[:gitlab][:repos_path],
+    :auth_file        => node[:gitlab][:auth_file],
+    :redis_binary     => node[:gitlab][:redis_binary_path],
+    :redis_host       => node[:gitlab][:redis_host],
+    :redis_port       => node[:gitlab][:redis_port],
+    :redis_socket     => node[:gitlab][:redis_socket],
+    :redis_namespace  => node[:gitlab][:redis_namespace]
+  )
+end
+
+rvm_shell "gitlab-shell-install" do
+  ruby_string node[:gitlab][:install_ruby]
+  cwd         node[:gitlab][:gitlab_shell_home]
+  user        node[:gitlab][:user]
+  group       node[:gitlab][:group]
+  code        %{./bin/install}
+  creates     "#{node[:gitlab][:user]}/.ssh/authorized_keys"
+end
+
+::Chef::Recipe.send(:include, Gitlabhq::Helper)
+
+gitlab_db_config = gitlab_database_config
+
+include_recipe "#{gitlab_db_config.database_type}::ruby"
 
 # Clone gitlab
 git node[:gitlab][:app_home] do
   repository  node[:gitlab][:gitlab_url]
   reference   node[:gitlab][:gitlab_branch]
-  action      :checkout
+  action      :sync
   user        node[:gitlab][:user]
   group       node[:gitlab][:group]
 end
@@ -25,22 +125,13 @@ service 'gitlab' do
   action [ :enable, :start ]
 end
 
-local_aliases = [node[:fqdn], node[:gitlab][:server_name]]
-local_aliases << node[:gitlab][:ci][:server_name] if node[:gitlab][:ci][:ci_enabled]
-
-hosts_file_entry '127.0.0.1' do
-  hostname 'localhost'
-  aliases  local_aliases
-  comment  "Set aliases for localhost"
-end
-
 # Render gitlab config file
 template "#{node[:gitlab][:app_home]}/config/gitlab.yml" do
   owner  node[:gitlab][:user]
   group  node[:gitlab][:group]
   mode   0644
   variables(
-    :fqdn             => node[:fqdn],
+    :fqdn             => node[:gitlab][:server_name],
     :https_boolean    => node[:gitlab][:https],
     :git_user         => node[:gitlab][:git_user],
     :git_home         => node[:gitlab][:git_home],
@@ -61,13 +152,14 @@ template "#{node[:gitlab][:app_home]}/config/database.yml" do
   group  node[:gitlab][:group]
   mode   0644
   variables(
-    :adapter  => node[:gitlab][:database][:adapter],
-    :encoding => node[:gitlab][:database][:encoding],
-    :host     => node[:gitlab][:database][:host],
-    :database => node[:gitlab][:database][:database],
-    :pool     => node[:gitlab][:database][:pool],
-    :username => node[:gitlab][:database][:username],
-    :password => node[:gitlab][:database][:password]
+    :adapter  => gitlab_db_config.adapter,
+    :encoding => gitlab_db_config.encoding,
+    :host     => gitlab_db_config.host,
+    :port     => gitlab_db_config.port,
+    :database => gitlab_db_config.database,
+    :pool     => gitlab_db_config.pool,
+    :username => gitlab_db_config.username,
+    :password => gitlab_db_config.password
   )
   notifies :restart, 'service[gitlab]'
 end
@@ -97,24 +189,24 @@ directory node[:gitlab][:backup_path] do
 end
 
 # Install gems with bundle install
-without_group = node[:gitlab][:database][:type] == 'mysql' ? 'postgres' : 'mysql'
+#without_group = node[:gitlab][:database][:type] == 'mysql' ? 'postgres' : 'mysql'
 
-execute 'gitlab-bundle-install' do
-  command "bundle install --without development test #{without_group} --deployment"
-  cwd     node[:gitlab][:app_home]
-  user    node[:gitlab][:user]
-  group   node[:gitlab][:group]
-  environment({ 'LANG' => 'en_US.UTF-8', 'LC_ALL' => 'en_US.UTF-8' })
-  creates "#{node[:gitlab][:app_home]}/vendor/bundle"
+rvm_shell "Gitlab bundle install" do
+    ruby_string node[:gitlab][:install_ruby]
+    cwd         node[:gitlab][:app_home]
+    user        node[:gitlab][:user]
+    group       node[:gitlab][:group]
+    code        %{bundle install --without development test #{gitlab_db_config.without_group} --deployment}
+    creates     "#{node[:gitlab][:app_home]}/vendor/bundle"
 end
 
-# Setup database for Gitlab
-execute 'gitlab-bundle-rake' do
-  command "echo 'yes' | bundle exec rake gitlab:setup RAILS_ENV=production && touch #{node[:gitlab][:marker_dir]}/.gitlab-setup"
-  cwd     node[:gitlab][:app_home]
-  user    node[:gitlab][:user]
-  group   node[:gitlab][:group]
-  creates "#{node[:gitlab][:marker_dir]}/.gitlab-setup"
+
+rvm_shell "Gitlab rake db:migrate" do
+    ruby_string node[:gitlab][:install_ruby]
+    cwd         node[:gitlab][:app_home]
+    user        node[:gitlab][:user]
+    group       node[:gitlab][:group]
+    code        %{bundle exec rake RAILS_ENV=production db:migrate}
 end
 
 # Render puma template

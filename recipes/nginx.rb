@@ -1,12 +1,26 @@
+#
+# Cookbook Name:: gitlabhq
+# Recipe:: default
+#
+# Copyright 2013, Wide Eye Labs
+#
+# MIT License
+#
+
+# Compile nginx so we get a recent version
+include_recipe 'nginx::source'
+
 ssl_cert_key = node[:gitlab][:ssl_certificate_key]
 ssl_cert     = node[:gitlab][:ssl_certificate]
 https        = node[:gitlab][:https]
 ssl_req      = node[:gitlab][:ssl_req]
 
+local_aliases = %Q{ #{node[:gitlab][:server_name]} #{node[:gitlab][:ci][:server_name]} localhost }
 
-service 'nginx' do
-  supports :status => true, :restart => true, :reload => true
-  action [ :enable, :start ]
+hosts_file_entry '127.0.0.1' do
+  hostname node.name
+  aliases  local_aliases
+  comment  "Set aliases for localhost"
 end
 
 execute 'create-ssl-key' do
@@ -53,25 +67,23 @@ link '/etc/nginx/sites-enabled/default' do
   action :delete
 end
 
-if node[:gitlab][:ci][:ci_enabled]
-  # Render nginx vhost config
-  template   '/etc/nginx/sites-available/gitlab_ci.conf' do
-    owner    'root'
-    group    'root'
-    mode     0644
-    source   'nginx.conf.erb'
-    variables(
-      :server_name         => node[:gitlab][:ci][:server_name],
-      :app_name            => 'gitlab-ci',
-      :app_home            => node[:gitlab][:ci][:app_home],
-      :https_boolean       => node[:gitlab][:https],
-      :ssl_certificate     => node[:gitlab][:ssl_certificate],
-      :ssl_certificate_key => node[:gitlab][:ssl_certificate_key]
-    )
-    notifies :restart, 'service[nginx]'
-  end
+# Render nginx vhost config
+template   '/etc/nginx/sites-available/gitlab_ci.conf' do
+  owner    'root'
+  group    'root'
+  mode     0644
+  source   'nginx.conf.erb'
+  variables(
+    :server_name         => node[:gitlab][:ci][:server_name],
+    :app_name            => 'gitlab-ci',
+    :app_home            => node[:gitlab][:ci][:app_home],
+    :https_boolean       => node[:gitlab][:https],
+    :ssl_certificate     => node[:gitlab][:ssl_certificate],
+    :ssl_certificate_key => node[:gitlab][:ssl_certificate_key]
+  )
+  notifies :restart, 'service[nginx]'
+end
 
-  link '/etc/nginx/sites-enabled/gitlab_ci.conf' do
-    to '/etc/nginx/sites-available/gitlab_ci.conf'
-  end
+link '/etc/nginx/sites-enabled/gitlab_ci.conf' do
+  to '/etc/nginx/sites-available/gitlab_ci.conf'
 end

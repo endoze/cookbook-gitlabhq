@@ -1,0 +1,12 @@
+{
+  "id":"database",
+  "database_type":"mysql",
+  "port": 3306,
+  "host": "33.33.33.21",
+  "adapter": "mysql2",
+  "encoding": "utf8",
+  "pool": 5,
+  "database": "gitlab_ci",
+  "username": "gitlab_ci",
+  "password": "super_sekret"
+}
