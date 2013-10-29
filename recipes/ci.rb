@@ -68,7 +68,7 @@ template "#{node[:gitlab][:ci][:app_home]}/config/application.yml" do
   mode     0644
   source   'ci.application.yml'
   variables(
-    :allowed_urls => [node[:gitlab][:ci][:allowed_urls]]
+    :allowed_urls => node[:gitlab][:ci][:allowed_urls]
   )
   notifies :restart, 'service[gitlab_ci]'
 end
